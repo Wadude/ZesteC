@@ -1,7 +1,24 @@
 import { useEffect, useState } from 'react';
-import { collection, deleteDoc, doc, onSnapshot, setDoc, updateDoc } from 'firebase/firestore';
+import {
+  collection,
+  deleteDoc,
+  deleteField,
+  doc,
+  onSnapshot,
+  setDoc,
+  updateDoc,
+} from 'firebase/firestore';
 import { db } from './firebase';
-import type { Item } from './types';
+import type { Item, Unit } from './types';
+import { parseItemText } from './units';
+
+export interface ItemChanges {
+  name: string;
+  quantity: number | null;
+  unit: Unit;
+  price: number | null;
+  priceIsTotal: boolean;
+}
 
 // Live view of one list's items. Changes from other devices arrive automatically.
 // Writes are not awaited: they show instantly and sync in the background.
@@ -36,15 +53,34 @@ export function useList(listId: string, uid: string) {
 
   const itemRef = (id: string) => doc(db, 'lists', listId, 'items', id);
 
-  const add = (name: string) => {
-    const trimmed = name.trim();
-    if (!trimmed) return;
+  /** Adds an item. Text like "Rice 5kg" or "2 eggs" fills in the quantity. */
+  const add = (text: string) => {
+    if (!text.trim()) return;
+    const { name, quantity, unit } = parseItemText(text);
     const ref = doc(collection(db, 'lists', listId, 'items'));
     const now = Date.now();
     // New items go to the bottom: order uses the same scale as createdAt.
-    setDoc(ref, { name: trimmed, checked: false, createdAt: now, order: now, addedBy: uid }).catch(
-      logError('add item'),
-    );
+    setDoc(ref, {
+      name,
+      checked: false,
+      createdAt: now,
+      order: now,
+      addedBy: uid,
+      ...(quantity != null && { quantity, unit }),
+    }).catch(logError('add item'));
+  };
+
+  /** Saves the edit panel. Blank quantity or price removes it. */
+  const save = (id: string, changes: ItemChanges) => {
+    const name = changes.name.trim();
+    if (!name) return;
+    updateDoc(itemRef(id), {
+      name,
+      unit: changes.unit,
+      quantity: changes.quantity ?? deleteField(),
+      price: changes.price ?? deleteField(),
+      priceIsTotal: changes.price != null && changes.priceIsTotal ? true : deleteField(),
+    }).catch(logError('save item'));
   };
 
   /** Moves an item to a new position among the items still to buy. */
@@ -71,11 +107,6 @@ export function useList(listId: string, uid: string) {
     if (item) updateDoc(itemRef(id), { checked: !item.checked }).catch(logError('update item'));
   };
 
-  const rename = (id: string, name: string) => {
-    const trimmed = name.trim();
-    if (trimmed) updateDoc(itemRef(id), { name: trimmed }).catch(logError('rename item'));
-  };
-
   const remove = (id: string) => {
     deleteDoc(itemRef(id)).catch(logError('delete item'));
   };
@@ -89,7 +120,7 @@ export function useList(listId: string, uid: string) {
   const toBuy = items.filter((i) => !i.checked).sort(byPosition);
   const bought = items.filter((i) => i.checked).sort(byPosition);
 
-  return { loaded, toBuy, bought, add, toggle, rename, remove, restore, move };
+  return { loaded, items, toBuy, bought, add, save, toggle, remove, restore, move };
 }
 
 const position = (i: Item) => i.order ?? i.createdAt;

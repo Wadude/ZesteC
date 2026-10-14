@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { ItemRow } from './ItemRow';
+import { ItemSheet } from './ItemSheet';
 import { useList } from './useList';
+import { formatRs, listTotal } from './units';
 import { useReorder } from './useReorder';
 import type { Item } from './types';
 
@@ -13,10 +15,14 @@ interface Props {
 }
 
 export function ListScreen({ listId, uid, onOpenSettings }: Props) {
-  const { loaded, toBuy, bought, add, toggle, rename, remove, restore, move } = useList(
+  const { loaded, items, toBuy, bought, add, save, toggle, remove, restore, move } = useList(
     listId,
     uid,
   );
+  const [openId, setOpenId] = useState<string | null>(null);
+  const openItem = items.find((i) => i.id === openId);
+  const toBuyTotal = listTotal(toBuy);
+  const boughtTotal = listTotal(bought);
   const { listRef, propsFor, reordering } = useReorder(toBuy.length, move);
   const [text, setText] = useState('');
   const [showBought, setShowBought] = useState(true);
@@ -41,7 +47,7 @@ export function ListScreen({ listId, uid, onOpenSettings }: Props) {
       key={item.id}
       item={item}
       onToggle={() => toggle(item.id)}
-      onRename={(name) => rename(item.id, name)}
+      onOpen={() => setOpenId(item.id)}
       onDelete={() => handleDelete(item)}
       reorder={sortable ? propsFor(item.id, index) : undefined}
     />
@@ -53,7 +59,17 @@ export function ListScreen({ listId, uid, onOpenSettings }: Props) {
         <div className="header-text">
           <h1>My list</h1>
           <p className="count">
-            {!loaded ? ' ' : toBuy.length === 0 ? 'Nothing to buy' : `${toBuy.length} to buy`}
+            {!loaded
+              ? ' '
+              : toBuy.length === 0
+                ? 'Nothing to buy'
+                : `${toBuy.length} to buy`}
+            {toBuyTotal != null && (
+              <>
+                {' · '}
+                <span className="estimate">≈ {formatRs(toBuyTotal)}</span>
+              </>
+            )}
           </p>
         </div>
         <button className="icon-button" aria-label="Settings" onClick={onOpenSettings}>
@@ -88,12 +104,22 @@ export function ListScreen({ listId, uid, onOpenSettings }: Props) {
               <svg viewBox="0 0 24 24" aria-hidden="true" className={showBought ? 'open' : ''}>
                 <path d="M9 6l6 6-6 6" />
               </svg>
-              Bought ({bought.length})
+              Bought ({bought.length}){boughtTotal != null && ` · ${formatRs(boughtTotal)}`}
             </button>
             {showBought && <ul className="list">{bought.map((item, i) => renderRow(item, i, false))}</ul>}
           </section>
         )}
       </main>
+
+      {openItem && (
+        <ItemSheet
+          key={openItem.id}
+          item={openItem}
+          onSave={(changes) => save(openItem.id, changes)}
+          onDelete={() => handleDelete(openItem)}
+          onClose={() => setOpenId(null)}
+        />
+      )}
 
       <div className="bottom">
         {deleted && (
@@ -124,7 +150,7 @@ export function ListScreen({ listId, uid, onOpenSettings }: Props) {
             ref={inputRef}
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder="Add an item…"
+            placeholder="Add an item, e.g. Rice 5kg…"
             aria-label="New item"
             enterKeyHint="done"
           />

@@ -543,3 +543,220 @@ svg {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
+
+/* Item details and prices */
+.name {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.name-text {
+  overflow-wrap: anywhere;
+}
+.details {
+  font-size: 13px;
+  color: var(--muted);
+}
+.row.checked .details {
+  text-decoration: none;
+}
+.line-total {
+  flex: none;
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  padding-left: 4px;
+}
+.row.checked .line-total {
+  color: var(--muted);
+}
+.delete {
+  margin-left: -4px;
+}
+.estimate {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* Edit panel (bottom sheet) */
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgb(0 0 0 / 0.4);
+  animation: fade-in 0.15s ease;
+}
+.sheet {
+  width: 100%;
+  max-width: 560px;
+  max-height: 92dvh;
+  overflow-y: auto;
+  background: var(--surface);
+  border-radius: 20px 20px 0 0;
+  padding: 8px 16px calc(16px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: slide-up 0.2s ease;
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+}
+@keyframes slide-up {
+  from { transform: translateY(40px); opacity: 0.5; }
+}
+.sheet-handle {
+  width: 40px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--line);
+  margin: 0 auto;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.field > span:first-child {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.field input {
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  outline: none;
+  width: 100%;
+  min-width: 0;
+}
+.field input:focus {
+  border-color: var(--accent);
+}
+
+.qty-row {
+  display: flex;
+  gap: 8px;
+}
+.qty-row input {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.step {
+  flex: none;
+  width: 48px;
+  border-radius: 12px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  font-size: 22px;
+  line-height: 1;
+}
+
+.chips {
+  display: flex;
+  gap: 6px;
+}
+.chip {
+  flex: 1;
+  min-width: 0;
+  min-height: 38px;
+  padding: 0 4px;
+  border-radius: 19px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 15px;
+}
+.chip.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+
+.price-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding-left: 14px;
+}
+.price-input:focus-within {
+  border-color: var(--accent);
+}
+.price-input span {
+  color: var(--muted);
+  font-weight: 600;
+}
+.price-input input {
+  border: none;
+  background: transparent;
+  padding-left: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.sheet-total {
+  margin: 0;
+  color: var(--muted);
+}
+.sheet-total strong {
+  color: var(--text);
+  font-size: 18px;
+}
+
+.sheet-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sheet-actions .spacer {
+  flex: 1;
+}
+.text-danger {
+  color: var(--danger);
+  font-weight: 600;
+  padding: 12px 4px;
+}
+.secondary-button.small {
+  width: auto;
+  padding: 0 18px;
+}
+.primary-button {
+  min-height: 48px;
+  padding: 0 24px;
+  border-radius: 12px;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-weight: 600;
+}
+.primary-button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.price-row {
+  display: flex;
+  gap: 8px;
+}
+.price-row .price-input {
+  flex: 1;
+  min-width: 0;
+}
+.segmented.compact {
+  flex: none;
+}
+.segmented.compact button {
+  flex: none;
+  min-height: 0;
+  padding: 0 12px;
+  font-size: 14px;
+}

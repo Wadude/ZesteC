@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import type { Item } from './types';
+import { formatRs, itemDetails, lineTotal } from './units';
 
 const SWIPE_DELETE_PX = 96;
 
@@ -17,21 +18,19 @@ export interface ReorderProps {
 interface Props {
   item: Item;
   onToggle: () => void;
-  onRename: (name: string) => void;
+  onOpen: () => void;
   onDelete: () => void;
   reorder?: ReorderProps;
 }
 
-export function ItemRow({ item, onToggle, onRename, onDelete, reorder }: Props) {
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState(item.name);
+export function ItemRow({ item, onToggle, onOpen, onDelete, reorder }: Props) {
   const [dx, setDx] = useState(0);
   const startX = useRef<number | null>(null);
   const swiped = useRef(false);
 
   // Swipe left or right on touch screens to delete.
   const onPointerDown = (e: React.PointerEvent) => {
-    if (e.pointerType === 'mouse' || editing) return;
+    if (e.pointerType === 'mouse') return;
     startX.current = e.clientX;
     swiped.current = false;
   };
@@ -56,14 +55,8 @@ export function ItemRow({ item, onToggle, onRename, onDelete, reorder }: Props) 
     fn();
   };
 
-  const startEdit = () => {
-    setDraft(item.name);
-    setEditing(true);
-  };
-  const saveEdit = () => {
-    setEditing(false);
-    if (draft.trim() && draft.trim() !== item.name) onRename(draft);
-  };
+  const details = itemDetails(item);
+  const total = lineTotal(item);
 
   return (
     <li
@@ -129,27 +122,12 @@ export function ItemRow({ item, onToggle, onRename, onDelete, reorder }: Props) 
           </svg>
         </button>
 
-        {editing ? (
-          <input
-            className="edit"
-            value={draft}
-            autoFocus
-            aria-label="Edit item"
-            onChange={(e) => setDraft(e.target.value)}
-            onBlur={saveEdit}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') e.currentTarget.blur();
-              if (e.key === 'Escape') {
-                setDraft(item.name);
-                setEditing(false);
-              }
-            }}
-          />
-        ) : (
-          <button className="name" onClick={unlessSwiped(startEdit)}>
-            {item.name}
-          </button>
-        )}
+        <button className="name" onClick={unlessSwiped(onOpen)}>
+          <span className="name-text">{item.name}</span>
+          {details && <span className="details">{details}</span>}
+        </button>
+
+        {total != null && <span className="line-total">{formatRs(total)}</span>}
 
         <button className="delete" aria-label={`Delete ${item.name}`} onClick={unlessSwiped(onDelete)}>
           <svg viewBox="0 0 24 24" aria-hidden="true">

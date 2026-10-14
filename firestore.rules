@@ -18,7 +18,13 @@ service cloud.firestore {
       return d.name is string && d.name.size() > 0 && d.name.size() <= 200
         && d.checked is bool
         && d.createdAt is number
-        && d.get('order', 0) is number;
+        && d.get('order', 0) is number
+        && d.get('quantity', 1) is number && d.get('quantity', 1) > 0
+        && d.get('quantity', 1) <= 1000000
+        && d.get('unit', 'pcs') in ['pcs', 'pack', 'g', 'kg', 'ml', 'L']
+        && d.get('price', 0) is number && d.get('price', 0) >= 0
+        && d.get('price', 0) <= 10000000
+        && d.get('priceIsTotal', false) is bool;
     }
 
     match /lists/{listId} {
