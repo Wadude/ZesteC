@@ -1,20 +1,27 @@
 import { useEffect, useRef, useState } from 'react';
 import { ItemRow } from './ItemRow';
 import { ItemSheet } from './ItemSheet';
+import { ListsSheet } from './ListsSheet';
+import { ShareSheet } from './ShareSheet';
 import { useList } from './useList';
 import { formatRs, listTotal } from './units';
 import { useReorder } from './useReorder';
-import type { Item } from './types';
+import type { Item, List } from './types';
 
 const UNDO_MS = 5000;
 
 interface Props {
-  listId: string;
+  list: List;
+  lists: List[];
   uid: string;
+  onSelectList: (listId: string) => void;
   onOpenSettings: () => void;
 }
 
-export function ListScreen({ listId, uid, onOpenSettings }: Props) {
+export function ListScreen({ list, lists, uid, onSelectList, onOpenSettings }: Props) {
+  const listId = list.id;
+  const [panel, setPanel] = useState<'lists' | 'share' | null>(null);
+  const shared = list.memberIds.length > 1;
   const { loaded, items, toBuy, bought, add, save, toggle, remove, restore, move } = useList(
     listId,
     uid,
@@ -57,7 +64,16 @@ export function ListScreen({ listId, uid, onOpenSettings }: Props) {
     <div className="app">
       <header className="header header-row">
         <div className="header-text">
-          <h1>My list</h1>
+          <button
+            className="title-button"
+            aria-label={`${list.name}. Switch list`}
+            onClick={() => setPanel('lists')}
+          >
+            <h1>{list.name}</h1>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </button>
           <p className="count">
             {!loaded
               ? ' '
@@ -72,6 +88,18 @@ export function ListScreen({ listId, uid, onOpenSettings }: Props) {
             )}
           </p>
         </div>
+        <button
+          className={`icon-button${shared ? ' shared' : ''}`}
+          aria-label={shared ? `Shared with ${list.memberIds.length - 1} more. Share settings` : 'Share list'}
+          onClick={() => setPanel('share')}
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="9" cy="8" r="3.2" />
+            <path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5" />
+            <path d="M16 11.5a2.6 2.6 0 1 0 0-5.2M17.5 14c1.8.5 3 2.1 3.3 4.5" />
+          </svg>
+          {shared && <span className="share-count">{list.memberIds.length}</span>}
+        </button>
         <button className="icon-button" aria-label="Settings" onClick={onOpenSettings}>
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="12" cy="12" r="3" />
@@ -120,6 +148,17 @@ export function ListScreen({ listId, uid, onOpenSettings }: Props) {
           onClose={() => setOpenId(null)}
         />
       )}
+
+      {panel === 'lists' && (
+        <ListsSheet
+          lists={lists}
+          currentId={listId}
+          uid={uid}
+          onSelect={onSelectList}
+          onClose={() => setPanel(null)}
+        />
+      )}
+      {panel === 'share' && <ShareSheet list={list} uid={uid} onClose={() => setPanel(null)} />}
 
       <div className="bottom">
         {deleted && (

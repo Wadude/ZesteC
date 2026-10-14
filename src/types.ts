@@ -17,6 +17,15 @@ export interface Item {
   addedBy?: string;
 }
 
+export interface List {
+  id: string;
+  name: string;
+  ownerId: string;
+  memberIds: string[];
+  /** Code for the current invite link, if one has been made. */
+  inviteCode?: string;
+}
+
 export interface Profile {
   uid: string;
   isGuest: boolean;

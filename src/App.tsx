@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ListScreen } from './ListScreen';
 import { SettingsScreen } from './SettingsScreen';
+import { useLists } from './useLists';
 import { useSession } from './useSession';
 import { useTheme } from './useTheme';
 
@@ -8,8 +9,21 @@ type Screen = 'list' | 'settings';
 
 const screenFromHash = (): Screen => (location.hash === '#settings' ? 'settings' : 'list');
 
+/** Invite links look like /join/ABCD2345. Read the code once, then tidy the address bar. */
+function takeJoinCode(): string | null {
+  const m = location.pathname.match(/^\/join\/([A-Za-z0-9]{4,16})\/?$/);
+  if (!m) return null;
+  history.replaceState(null, '', '/');
+  return m[1];
+}
+const initialJoinCode = takeJoinCode();
+
 export default function App() {
-  const { profile, listId, error, refresh } = useSession();
+  const { profile, error, refresh } = useSession();
+  const { lists, current, ready, select, joinResult, clearJoinResult } = useLists(
+    profile?.uid,
+    initialJoinCode,
+  );
   const [theme, setTheme] = useTheme();
   const [screen, setScreen] = useState<Screen>(screenFromHash);
   const openedInApp = useRef(false);
@@ -20,6 +34,13 @@ export default function App() {
     window.addEventListener('hashchange', onHash);
     return () => window.removeEventListener('hashchange', onHash);
   }, []);
+
+  // Hide the "You joined…" message after a while.
+  useEffect(() => {
+    if (!joinResult) return;
+    const t = setTimeout(clearJoinResult, 6000);
+    return () => clearTimeout(t);
+  }, [joinResult, clearJoinResult]);
 
   const openSettings = () => {
     openedInApp.current = true;
@@ -44,11 +65,11 @@ export default function App() {
     );
   }
 
-  if (!profile || !listId) {
+  if (!profile || !ready || !current) {
     return (
       <div className="splash">
         <p className="splash-title">Zeste</p>
-        <p>Getting your list ready…</p>
+        <p>{initialJoinCode ? 'Joining the shared list…' : 'Getting your list ready…'}</p>
       </div>
     );
   }
@@ -57,7 +78,7 @@ export default function App() {
     return (
       <SettingsScreen
         profile={profile}
-        listId={listId}
+        listId={current.id}
         theme={theme}
         onThemeChange={setTheme}
         onAccountChanged={refresh}
@@ -66,5 +87,23 @@ export default function App() {
     );
   }
 
-  return <ListScreen listId={listId} uid={profile.uid} onOpenSettings={openSettings} />;
+  return (
+    <>
+      <ListScreen
+        key={current.id}
+        list={current}
+        lists={lists}
+        uid={profile.uid}
+        onSelectList={select}
+        onOpenSettings={openSettings}
+      />
+      {joinResult && (
+        <div className="banner" role="status" onClick={clearJoinResult}>
+          {joinResult.status === 'joined'
+            ? `You joined "${lists.find((l) => l.id === joinResult.listId)?.name ?? 'the list'}". Changes sync live.`
+            : joinResult.reason}
+        </div>
+      )}
+    </>
+  );
 }
