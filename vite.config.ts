@@ -32,9 +32,11 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png}'],
+        // The demo walkthrough is a separate page; don't store it with the app.
+        globIgnores: ['demo/**'],
         navigateFallback: '/index.html',
-        // Firebase's own pages (sign-in handler etc.) must always come from the server.
-        navigateFallbackDenylist: [/^\/__\//],
+        // Firebase's own pages (sign-in handler etc.) and the demo must come from the server.
+        navigateFallbackDenylist: [/^\/__\//, /^\/demo/],
       },
     }),
   ],

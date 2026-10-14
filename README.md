@@ -58,3 +58,9 @@ This is enforced by `firestore.rules`, not just the screen.
 - **Feedback** from the in-app 💬 button lands in Firestore → `feedback` (readable only in the
   Firebase console).
 - **Opening up later:** remove the testers check from `allowed()` in the rules and the access screen.
+
+## Demo walkthrough
+
+`public/demo/` is an animated tour built from real screenshots (English, French, Kreol), served at `/demo/`.
+After changing the app, refresh the screenshots with `node scripts/demo/capture.mjs` (needs Microsoft Edge),
+then build and deploy. Captions are in `public/demo/index.html`.

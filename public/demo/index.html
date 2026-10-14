@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f1f6f0" />
+    <meta name="description" content="A one-minute tour of Zeste: shared grocery lists and budget." />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>How Zeste works</title>
+    <style>
+      :root {
+        --bg: #f1f6f0;
+        --surface: #ffffff;
+        --text: #18221a;
+        --muted: #5f6d61;
+        --line: #dce7da;
+        --accent: #2f7d4f;
+        --accent-text: #ffffff;
+        --frame: #1b231d;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0e1510;
+          --surface: #17211a;
+          --text: #e4eee5;
+          --muted: #93a796;
+          --line: #25332a;
+          --accent: #5cbf85;
+          --accent-text: #0d1a12;
+          --frame: #000000;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      }
+      button {
+        font: inherit;
+        color: inherit;
+        background: none;
+        border: none;
+        cursor: pointer;
+      }
+      .page {
+        min-height: 100dvh;
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 20px 16px 32px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      header img {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+      }
+      header h1 {
+        flex: 1;
+        margin: 0;
+        font-size: 20px;
+      }
+      .langs {
+        display: flex;
+        gap: 2px;
+        padding: 3px;
+        border-radius: 10px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+      }
+      .langs button {
+        padding: 6px 10px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--muted);
+      }
+      .langs button[aria-pressed='true'] {
+        background: var(--accent);
+        color: var(--accent-text);
+      }
+
+      .stage {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 40px;
+        flex-wrap: wrap;
+      }
+
+      /* Phone */
+      .phone {
+        --h: min(72dvh, 680px);
+        height: var(--h);
+        aspect-ratio: 390 / 844;
+        padding: calc(var(--h) * 0.018);
+        border-radius: calc(var(--h) * 0.075);
+        background: var(--frame);
+        box-shadow: 0 24px 60px rgb(0 0 0 / 0.25);
+        flex: none;
+      }
+      @media (max-width: 640px) {
+        .phone {
+          --h: min(52dvh, calc((100vw - 64px) * 844 / 390));
+        }
+      }
+      .screen {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        border-radius: calc(var(--h) * 0.06);
+        overflow: hidden;
+        background: #f1f6f0;
+      }
+      .screen img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+      }
+      .screen img.show {
+        opacity: 1;
+      }
+
+      /* The "finger": a soft touch circle that glides to the button, then taps. */
+      .finger {
+        position: absolute;
+        width: 15%;
+        aspect-ratio: 1;
+        margin: -7.5% 0 0 -7.5%;
+        border-radius: 50%;
+        background: rgb(255 255 255 / 0.45);
+        border: 3px solid rgb(24 34 26 / 0.55);
+        box-shadow: 0 6px 18px rgb(0 0 0 / 0.3);
+        left: 110%;
+        top: 105%;
+        opacity: 0;
+        transition:
+          left 0.9s cubic-bezier(0.45, 0, 0.2, 1),
+          top 0.9s cubic-bezier(0.45, 0, 0.2, 1),
+          opacity 0.3s ease,
+          transform 0.15s ease;
+        pointer-events: none;
+      }
+      .finger.on {
+        opacity: 1;
+      }
+      .finger.press {
+        transform: scale(0.8);
+      }
+      .ripple {
+        position: absolute;
+        width: 15%;
+        aspect-ratio: 1;
+        margin: -7.5% 0 0 -7.5%;
+        border-radius: 50%;
+        border: 3px solid var(--accent);
+        opacity: 0;
+        pointer-events: none;
+      }
+      .ripple.go {
+        animation: ripple 0.6s ease-out;
+      }
+      @keyframes ripple {
+        from {
+          opacity: 0.9;
+          transform: scale(0.6);
+        }
+        to {
+          opacity: 0;
+          transform: scale(2);
+        }
+      }
+
+      /* Caption */
+      .caption {
+        width: min(100%, 380px);
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .step {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--accent);
+        letter-spacing: 0.04em;
+      }
+      .caption h2 {
+        margin: 0;
+        font-size: 28px;
+        line-height: 1.15;
+      }
+      .caption p {
+        margin: 0;
+        font-size: 18px;
+        line-height: 1.45;
+        color: var(--muted);
+        min-height: 3.2em;
+      }
+      .fade {
+        animation: fade 0.45s ease;
+      }
+      @keyframes fade {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+      }
+      .dots {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .dots button {
+        width: 10px;
+        height: 10px;
+        padding: 0;
+        border-radius: 5px;
+        background: var(--line);
+        transition: width 0.25s ease, background 0.25s ease;
+      }
+      .dots button[aria-current='true'] {
+        width: 26px;
+        background: var(--accent);
+      }
+      .controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .controls button {
+        width: 48px;
+        height: 48px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--surface);
+        border: 1px solid var(--line);
+      }
+      .controls button.play {
+        width: 56px;
+        height: 56px;
+        background: var(--accent);
+        color: var(--accent-text);
+        border: none;
+      }
+      .controls svg {
+        width: 22px;
+        height: 22px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.4;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .controls .play svg.fill {
+        fill: currentColor;
+        stroke: none;
+      }
+      .cta {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 6px;
+        padding: 14px 22px;
+        border-radius: 14px;
+        background: var(--accent);
+        color: var(--accent-text);
+        font-weight: 700;
+        text-decoration: none;
+        align-self: flex-start;
+      }
+      @media (max-width: 640px) {
+        .page {
+          padding: 12px 16px 20px;
+          gap: 12px;
+        }
+        header h1 {
+          font-size: 17px;
+        }
+        header img {
+          width: 32px;
+          height: 32px;
+        }
+        .stage {
+          gap: 14px;
+          align-content: flex-start;
+        }
+        .caption {
+          align-items: center;
+          text-align: center;
+          gap: 10px;
+        }
+        .caption h2 {
+          font-size: 21px;
+        }
+        .caption p {
+          font-size: 15px;
+          min-height: 2.9em;
+        }
+        .controls button {
+          width: 44px;
+          height: 44px;
+        }
+        .controls button.play {
+          width: 50px;
+          height: 50px;
+        }
+        .cta {
+          align-self: center;
+          padding: 10px 18px;
+          margin-top: 0;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .finger {
+          transition: opacity 0.3s ease;
+        }
+        .screen img {
+          transition: none;
+        }
+      }
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <img src="/icons/icon-192.png" alt="" />
+        <h1 id="title">How Zeste works</h1>
+        <div class="langs" role="group" aria-label="Language">
+          <button data-lang="en" lang="en">EN</button>
+          <button data-lang="fr" lang="fr">FR</button>
+          <button data-lang="mfe" lang="mfe">Kreol</button>
+        </div>
+      </header>
+
+      <main class="stage">
+        <div class="phone">
+          <div class="screen" id="screen" aria-live="off">
+            <img id="imgA" alt="" />
+            <img id="imgB" alt="" />
+            <div class="ripple" id="ripple"></div>
+            <div class="finger" id="finger"></div>
+          </div>
+        </div>
+
+        <section class="caption" aria-live="polite">
+          <span class="step" id="step"></span>
+          <h2 id="heading"></h2>
+          <p id="text"></p>
+          <div class="dots" id="dots"></div>
+          <div class="controls">
+            <button id="prev" aria-label="Previous">
+              <svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" /></svg>
+            </button>
+            <button id="play" class="play" aria-label="Pause"></button>
+            <button id="next" aria-label="Next">
+              <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" /></svg>
+            </button>
+          </div>
+          <a class="cta" id="cta" href="/">Open Zeste</a>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      // Captions for each step, in the order of the screenshots (see scripts/demo/capture.mjs).
+      const TEXT = {
+        en: {
+          title: 'How Zeste works',
+          step: (n, t) => `STEP ${n} OF ${t}`,
+          open: 'Open Zeste',
+          prev: 'Previous', next: 'Next', play: 'Play', pause: 'Pause', again: 'Watch again',
+          scenes: {
+            code: ['Get in', 'Open the link and enter your tester code.'],
+            list: ['Your list, sorted by aisle', 'Items are grouped the way you walk through the shop, with prices and the total.'],
+            type: ['Add things fast', 'Type "Cheese 200g" and tap Add. Zeste fills in the amount for you.'],
+            added: ['It finds the right aisle', 'Cheese goes straight into Dairy & eggs. Tap any item to change it.'],
+            edit: ['Prices and quantities', 'Set how much, the price per kg or the total, and the category.'],
+            tick: ['Tick as you shop', "Ticked items move to Bought. When you're done, tap Done shopping."],
+            done: ['Save the shop', 'Check what you paid and where. The bought items clear from your list.'],
+            saved: ['Your budget updates', "The bar at the top shows how much of this month's budget you've used."],
+            budget: ['See your month', 'Spending per shop and per store, and how much is left.'],
+            share: ['Shop together', 'Send an invite link. Everyone on the list sees changes instantly.'],
+            settings: ['Make it yours', 'Pick English, Français or Kreol, and Green, Lagoon or Coral, in light or dark.'],
+          },
+        },
+        fr: {
+          title: 'Comment marche Zeste',
+          step: (n, t) => `ÉTAPE ${n} SUR ${t}`,
+          open: 'Ouvrir Zeste',
+          prev: 'Précédent', next: 'Suivant', play: 'Lecture', pause: 'Pause', again: 'Revoir',
+          scenes: {
+            code: ['Entrer', 'Ouvrez le lien et saisissez votre code testeur.'],
+            list: ['Votre liste, rangée par rayon', 'Les articles sont groupés comme dans le magasin, avec les prix et le total.'],
+            type: ['Ajoutez vite', 'Tapez « Fromage 200g » puis Ajouter. Zeste remplit la quantité pour vous.'],
+            added: ['Le bon rayon, tout seul', 'Le fromage va directement dans Laitier & œufs. Touchez un article pour le modifier.'],
+            edit: ['Prix et quantités', 'Indiquez la quantité, le prix au kg ou le total, et la catégorie.'],
+            tick: ['Cochez en faisant vos courses', 'Les articles cochés passent dans Acheté. À la fin, touchez Courses terminées.'],
+            done: ['Enregistrez la course', 'Vérifiez le montant payé et le magasin. Les articles achetés quittent la liste.'],
+            saved: ['Le budget se met à jour', 'La barre en haut montre la part du budget du mois déjà utilisée.'],
+            budget: ["Votre mois en un coup d'œil", "Dépenses par course et par magasin, et ce qu'il reste."],
+            share: ['Les courses à plusieurs', "Envoyez un lien d'invitation. Tout le monde voit les changements en direct."],
+            settings: ['À votre goût', 'Choisissez English, Français ou Kreol, et Vert, Lagon ou Corail, en clair ou sombre.'],
+          },
+        },
+        mfe: {
+          title: 'Kouma Zeste marse',
+          step: (n, t) => `ETAP ${n} LOR ${t}`,
+          open: 'Ouver Zeste',
+          prev: 'Avan', next: 'Apre', play: 'Zwe', pause: 'Poz', again: 'Get ankor',
+          scenes: {
+            code: ['Rantre', 'Ouver lien-la ek rant ou kod testeur.'],
+            list: ['Ou lalis, klase par rayon', 'Bann zafer groupe kouma dan magazin, avek pri ek total.'],
+            type: ['Ajoute vit', 'Tap "Fromaz 200g" ek tous Ajoute. Zeste ranpli kantite-la pou ou.'],
+            added: ['Li trouv bon rayon tousel', 'Fromaz al direk dan Dile ek dizef. Tous enn zafer pou sanz li.'],
+            edit: ['Pri ek kantite', 'Met kantite, pri par kg ouswa total, ek kategori.'],
+            tick: ['Tik pandan ou fer komisyon', 'Bann zafer tike al dan Finn aste. Kan ou fini, tous Fini fer komisyon.'],
+            done: ['Sov komisyon-la', 'Verifie konbien ou finn peye ek kot. Bann zafer aste tir lor lalis.'],
+            saved: ['Bidze met li azour', 'Bar lao montre konbien ou finn servi dan bidze sa mwa-la.'],
+            budget: ['Get ou mwa', 'Depans par komisyon ek par magazin, ek konbien res.'],
+            share: ['Fer komisyon ansam', 'Avoy enn lien invitasion. Tou dimoun trouv bann sanzman an direk.'],
+            settings: ['Fer li pou ou', 'Swazir English, Français ouswa Kreol, ek Ver, Lagon ouswa Koray, kler ouswa nwar.'],
+          },
+        },
+      };
+
+      const ICONS = {
+        play: '<svg viewBox="0 0 24 24" class="fill"><path d="M8 5.5v13l11-6.5z"/></svg>',
+        pause: '<svg viewBox="0 0 24 24" class="fill"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>',
+        again: '<svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.5-5.8M4 4v4h4"/></svg>',
+      };
+
+      const $ = (id) => document.getElementById(id);
+      const imgs = [$('imgA'), $('imgB')];
+      const finger = $('finger');
+      const ripple = $('ripple');
+      const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+
+      let lang = new URLSearchParams(location.search).get('lang');
+      if (!TEXT[lang]) {
+        const nav = (navigator.language || 'en').toLowerCase();
+        lang = nav.startsWith('mfe') ? 'mfe' : nav.startsWith('fr') ? 'fr' : 'en';
+      }
+      let scenes = {};
+      let index = 0;
+      let playing = !reduced;
+      let shown = 0;
+      let run = 0; // bumps on every jump, so an old animation stops
+
+      const list = () => scenes[lang] || [];
+      const src = (s) => `img/${lang}/${s.id}.webp`;
+
+      function preload(i) {
+        const s = list()[i];
+        if (s) new Image().src = src(s);
+      }
+
+      function setPlayButton() {
+        const t = TEXT[lang];
+        const atEnd = !playing && index === list().length - 1;
+        const kind = atEnd ? 'again' : playing ? 'pause' : 'play';
+        $('play').innerHTML = ICONS[kind];
+        $('play').setAttribute('aria-label', t[kind]);
+      }
+
+      function render() {
+        const t = TEXT[lang];
+        const s = list()[index];
+        if (!s) return;
+        // Crossfade to the new screenshot.
+        const next = imgs[1 - shown];
+        next.src = src(s);
+        next.onload = () => {
+          next.classList.add('show');
+          imgs[shown].classList.remove('show');
+          shown = 1 - shown;
+        };
+        const [heading, text] = t.scenes[s.id] || ['', ''];
+        $('step').textContent = t.step(index + 1, list().length);
+        for (const id of ['heading', 'text']) {
+          const el = $(id);
+          el.classList.remove('fade');
+          void el.offsetWidth;
+          el.classList.add('fade');
+        }
+        $('heading').textContent = heading;
+        $('text').textContent = text;
+        imgs.forEach((img) => (img.alt = heading));
+        [...$('dots').children].forEach((d, i) => d.setAttribute('aria-current', i === index));
+        setPlayButton();
+        preload(index + 1);
+      }
+
+      function hideFinger() {
+        finger.classList.remove('on', 'press');
+        finger.style.left = '110%';
+        finger.style.top = '105%';
+      }
+
+      /** Show the current step, then (if playing) tap and move on. */
+      async function play(myRun) {
+        render();
+        hideFinger();
+        const s = list()[index];
+        await wait(1700);
+        if (myRun !== run || !playing) return;
+        if (s.tap) {
+          // Glide the finger to the button, press, ripple.
+          finger.classList.add('on');
+          await wait(50);
+          finger.style.left = `${s.tap.x * 100}%`;
+          finger.style.top = `${s.tap.y * 100}%`;
+          await wait(reduced ? 300 : 1000);
+          if (myRun !== run || !playing) return;
+          finger.classList.add('press');
+          ripple.style.left = finger.style.left;
+          ripple.style.top = finger.style.top;
+          ripple.classList.remove('go');
+          void ripple.offsetWidth;
+          ripple.classList.add('go');
+          await wait(250);
+          finger.classList.remove('press');
+          await wait(450);
+        } else {
+          await wait(2200);
+        }
+        if (myRun !== run || !playing) return;
+        if (index < list().length - 1) {
+          index++;
+          play(myRun);
+        } else {
+          playing = false;
+          hideFinger();
+          setPlayButton();
+        }
+      }
+
+      function goTo(i, keepPlaying = playing) {
+        run++;
+        index = Math.max(0, Math.min(list().length - 1, i));
+        playing = keepPlaying;
+        if (playing) play(run);
+        else {
+          hideFinger();
+          render();
+        }
+      }
+
+      function setLang(next) {
+        lang = next;
+        document.documentElement.lang = next;
+        document.title = TEXT[next].title;
+        $('title').textContent = TEXT[next].title;
+        $('cta').textContent = TEXT[next].open;
+        $('prev').setAttribute('aria-label', TEXT[next].prev);
+        $('next').setAttribute('aria-label', TEXT[next].next);
+        document.querySelectorAll('.langs button').forEach((b) =>
+          b.setAttribute('aria-pressed', b.dataset.lang === next),
+        );
+        const url = new URL(location.href);
+        url.searchParams.set('lang', next);
+        history.replaceState(null, '', url);
+        goTo(index);
+      }
+
+      $('prev').onclick = () => goTo(index - 1, false);
+      $('next').onclick = () => goTo(index + 1, false);
+      $('play').onclick = () => {
+        if (playing) {
+          playing = false;
+          run++;
+          hideFinger();
+          setPlayButton();
+        } else {
+          goTo(index === list().length - 1 ? 0 : index, true);
+        }
+      };
+      document.querySelectorAll('.langs button').forEach((b) => (b.onclick = () => setLang(b.dataset.lang)));
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') goTo(index + 1, false);
+        if (e.key === 'ArrowLeft') goTo(index - 1, false);
+        if (e.key === ' ' && e.target === document.body) {
+          e.preventDefault();
+          $('play').click();
+        }
+      });
+
+      fetch('scenes.json')
+        .then((r) => r.json())
+        .then((data) => {
+          scenes = data;
+          $('dots').innerHTML = '';
+          list().forEach((_, i) => {
+            const d = document.createElement('button');
+            d.setAttribute('aria-label', String(i + 1));
+            d.onclick = () => goTo(i, false);
+            $('dots').appendChild(d);
+          });
+          setLang(lang);
+        });
+    </script>
+  </body>
+</html>
