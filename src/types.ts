@@ -5,3 +5,11 @@ export interface Item {
   createdAt: number;
   addedBy?: string;
 }
+
+export interface Profile {
+  uid: string;
+  isGuest: boolean;
+  name: string | null;
+  email: string | null;
+  photoURL: string | null;
+}

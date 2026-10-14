@@ -6,6 +6,13 @@
     <meta name="theme-color" content="#f6f7f2" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#121412" media="(prefers-color-scheme: dark)" />
     <title>Zeste</title>
+    <script>
+      // Apply the saved theme before the page draws, to avoid a flash.
+      try {
+        var t = localStorage.getItem('zeste.theme');
+        if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

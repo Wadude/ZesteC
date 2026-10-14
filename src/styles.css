@@ -11,8 +11,22 @@
   color-scheme: light;
 }
 
+/* Dark theme: follows the phone unless the user picked Light or Dark in Settings. */
+:root[data-theme='dark'] {
+  --bg: #121412;
+  --surface: #1c1f1c;
+  --text: #e8eae6;
+  --muted: #9aa09a;
+  --line: #2c302c;
+  --accent: #5cbf85;
+  --accent-text: #0d1a12;
+  --danger: #e0645a;
+  --toast-action: #2f7d4f;
+  --shadow: none;
+  color-scheme: dark;
+}
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='light']) {
     --bg: #121412;
     --surface: #1c1f1c;
     --text: #e8eae6;
@@ -21,6 +35,7 @@
     --accent: #5cbf85;
     --accent-text: #0d1a12;
     --danger: #e0645a;
+    --toast-action: #2f7d4f;
     --shadow: none;
     color-scheme: dark;
   }
@@ -98,7 +113,7 @@ svg {
 }
 .row-bg {
   position: absolute;
-  inset: 0;
+  inset: 1px; /* inset so the red doesn't show through the row's rounded edge */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -325,13 +340,156 @@ svg {
 .toast button {
   flex: none;
   padding: 6px 12px;
-  color: var(--accent);
+  color: var(--toast-action, var(--accent));
   font-weight: 700;
 }
-@media (prefers-color-scheme: dark) {
-  .toast button {
-    color: #2f7d4f;
-  }
+
+/* Header with a button */
+.header-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.header-text {
+  flex: 1;
+  min-width: 0;
+}
+.header-row h1 {
+  flex: 1;
+}
+.icon-button {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  margin: -4px -8px 0 -8px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--muted);
+}
+.icon-button:hover {
+  color: var(--text);
+}
+.icon-button svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 1.8;
+}
+
+/* Settings */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+.card h2 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.muted {
+  color: var(--muted);
+  margin: 0 0 14px;
+  line-height: 1.45;
+}
+
+.google-button,
+.secondary-button {
+  width: 100%;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  font-weight: 600;
+}
+.google-button:disabled,
+.secondary-button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.google-logo {
+  width: 20px;
+  height: 20px;
+  stroke: none;
+}
+
+.account {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 0 16px;
+}
+.account .muted {
+  margin: 0;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.account-text {
+  min-width: 0;
+}
+.account-name {
+  margin: 0;
+  font-weight: 600;
+}
+.avatar {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.avatar-letter {
+  display: grid;
+  place-items: center;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.notice {
+  margin: 12px 0 0;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.segmented {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 12px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+}
+.segmented button {
+  flex: 1;
+  min-height: 40px;
+  border-radius: 9px;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 15px;
+}
+.segmented button.active {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.12);
+}
+
+.version {
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+  margin: 24px 0;
 }
 
 :focus-visible {

@@ -19,7 +19,7 @@ Then open http://localhost:5173.
 
 - [x] Step 2: single shopping list (add, tick, edit, delete with undo), saved in the browser
 - [x] Step 3: Firebase: lists saved online (guest account behind the scenes), offline cache, security rules
-- [ ] Step 4: guest mode + Google login
+- [x] Step 4: Google login (links the guest account), Settings screen, light/dark/system theme
 - [ ] Step 5: sharing with invite codes and real-time sync
 - [ ] Step 6: budget tracker + dark mode setting
 - [ ] Step 7: installable app (PWA) and first testers
