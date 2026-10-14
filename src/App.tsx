@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { BudgetScreen } from './BudgetScreen';
 import { ListScreen } from './ListScreen';
 import { SettingsScreen } from './SettingsScreen';
 import { listName } from './i18n';
@@ -7,9 +8,10 @@ import { useLists } from './useLists';
 import { useSession } from './useSession';
 import { useAccent, useTheme } from './useTheme';
 
-type Screen = 'list' | 'settings';
+type Screen = 'list' | 'settings' | 'budget';
 
-const screenFromHash = (): Screen => (location.hash === '#settings' ? 'settings' : 'list');
+const screenFromHash = (): Screen =>
+  location.hash === '#settings' ? 'settings' : location.hash === '#budget' ? 'budget' : 'list';
 
 /** Invite links look like /join/ABCD2345. Read the code once, then tidy the address bar. */
 function takeJoinCode(): string | null {
@@ -59,9 +61,9 @@ export default function App() {
     return () => clearTimeout(t);
   }, [joinResult, clearJoinResult]);
 
-  const openSettings = () => {
+  const open = (next: Exclude<Screen, 'list'>) => {
     openedInApp.current = true;
-    location.hash = 'settings';
+    location.hash = next;
   };
   const goBack = () => {
     if (openedInApp.current) history.back();
@@ -91,6 +93,10 @@ export default function App() {
     );
   }
 
+  if (screen === 'budget') {
+    return <BudgetScreen key={current.id} list={current} uid={profile.uid} onBack={goBack} />;
+  }
+
   if (screen === 'settings') {
     return (
       <SettingsScreen
@@ -114,7 +120,8 @@ export default function App() {
         lists={lists}
         uid={profile.uid}
         onSelectList={select}
-        onOpenSettings={openSettings}
+        onOpenSettings={() => open('settings')}
+        onOpenBudget={() => open('budget')}
       />
       {joinResult && (
         <div className="banner" role="status" onClick={clearJoinResult}>

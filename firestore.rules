@@ -32,6 +32,15 @@ service cloud.firestore {
                                           'snacks', 'drinks', 'household', 'personal', 'other'];
     }
 
+    function validTrip() {
+      let d = request.resource.data;
+      return d.total is number && d.total >= 0 && d.total <= 10000000
+        && d.date is number
+        && d.itemCount is number
+        && d.items is list && d.items.size() <= 500
+        && (!('store' in d) || (d.store is string && d.store.size() <= 60));
+    }
+
     // Name and photo, so members of a shared list can see who's who.
     match /users/{uid} {
       allow read: if signedIn();
@@ -60,9 +69,12 @@ service cloud.firestore {
       allow update: if signedIn()
         && request.resource.data.ownerId == resource.data.ownerId
         && (
-          // Members can rename the list or set its invite code, but not change who's in it.
+          // Members can rename the list, set its invite code or budget, but not change who's in it.
           (request.auth.uid in resource.data.memberIds
-            && request.resource.data.memberIds == resource.data.memberIds)
+            && request.resource.data.memberIds == resource.data.memberIds
+            && request.resource.data.get('monthlyBudget', 0) is number
+            && request.resource.data.get('monthlyBudget', 0) >= 0
+            && request.resource.data.get('monthlyBudget', 0) <= 100000000)
           // The owner can remove people (but must stay in the list).
           || (request.auth.uid == resource.data.ownerId
             && request.auth.uid in request.resource.data.memberIds
@@ -84,6 +96,15 @@ service cloud.firestore {
       match /items/{itemId} {
         allow read, delete: if signedIn() && isMember(listId);
         allow create, update: if signedIn() && isMember(listId) && validItem();
+      }
+
+      // Shops (trips) for the budget.
+      match /trips/{tripId} {
+        allow read, delete: if signedIn() && isMember(listId);
+        allow create: if signedIn() && isMember(listId) && validTrip()
+          && request.resource.data.enteredBy == request.auth.uid;
+        allow update: if signedIn() && isMember(listId) && validTrip()
+          && request.resource.data.enteredBy == resource.data.enteredBy;
       }
     }
   }

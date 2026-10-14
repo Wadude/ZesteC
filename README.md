@@ -21,7 +21,7 @@ Then open http://localhost:5173.
 - [x] Step 3: Firebase: lists saved online (guest account behind the scenes), offline cache, security rules
 - [x] Step 4: Google login (links the guest account), Settings screen, light/dark/system theme
 - [x] Step 5: sharing with invite links, live sync, multiple lists, members, leave and reset link
-- [ ] Step 6: budget tracker + dark mode setting
+- [x] Step 6: budget tracker (Done shopping, monthly budget, shops, per-store totals) + themes
 - [ ] Step 7: installable app (PWA) and first testers
 
 ## Firebase

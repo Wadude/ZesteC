@@ -39,6 +39,29 @@ export interface List {
   memberIds: string[];
   /** Code for the current invite link, if one has been made. */
   inviteCode?: string;
+  /** Spending limit per month, in MUR. */
+  monthlyBudget?: number;
+}
+
+/** One item as it was when a shop was saved. */
+export interface TripItem {
+  name: string;
+  quantity?: number;
+  unit?: Unit;
+  total?: number;
+}
+
+/** One visit to the shops. */
+export interface Trip {
+  id: string;
+  /** Amount paid, in MUR. */
+  total: number;
+  /** When it happened (milliseconds since 1970). */
+  date: number;
+  store?: string;
+  itemCount: number;
+  items: TripItem[];
+  enteredBy: string;
 }
 
 export interface Profile {

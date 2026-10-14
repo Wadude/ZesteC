@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
+import { finishShopping, summarise, useTrips } from './budget';
+import { BudgetBar } from './BudgetScreen';
 import { CATEGORIES, CATEGORY_EMOJI, categoryOf } from './categories';
 import { ItemRow } from './ItemRow';
 import { ItemSheet } from './ItemSheet';
 import { ListsSheet } from './ListsSheet';
 import { NewListSheet } from './NewListSheet';
 import { ShareSheet } from './ShareSheet';
+import { TripSheet } from './TripSheet';
 import { listName } from './i18n';
 import { useI18n } from './useI18n';
 import { useList } from './useList';
@@ -31,13 +34,19 @@ interface Props {
   uid: string;
   onSelectList: (listId: string) => void;
   onOpenSettings: () => void;
+  onOpenBudget: () => void;
 }
 
-export function ListScreen({ list, lists, uid, onSelectList, onOpenSettings }: Props) {
+export function ListScreen({ list, lists, uid, onSelectList, onOpenSettings, onOpenBudget }: Props) {
   const { t } = useI18n();
   const listId = list.id;
   const name = listName(list.name, t);
-  const [panel, setPanel] = useState<'lists' | 'share' | 'new' | null>(null);
+  const [panel, setPanel] = useState<'lists' | 'share' | 'new' | 'done' | null>(null);
+  const [saved, setSaved] = useState<string | null>(null);
+  const now = new Date();
+  const { trips } = useTrips(list.id, now.getFullYear(), now.getMonth());
+  const monthSpent = summarise(trips).spent;
+  const budget = list.monthlyBudget;
   const shared = list.memberIds.length > 1;
   const { loaded, items, toBuy, bought, add, save, toggle, remove, restore, move } = useList(
     listId,
@@ -68,6 +77,13 @@ export function ListScreen({ list, lists, uid, onSelectList, onOpenSettings }: P
     const t = setTimeout(() => setDeleted(null), UNDO_MS);
     return () => clearTimeout(t);
   }, [deleted]);
+
+  // Hide the "Saved…" message after a few seconds.
+  useEffect(() => {
+    if (!saved) return;
+    const timer = setTimeout(() => setSaved(null), UNDO_MS);
+    return () => clearTimeout(timer);
+  }, [saved]);
 
   const handleDelete = (item: Item) => {
     remove(item.id);
@@ -163,6 +179,24 @@ export function ListScreen({ list, lists, uid, onSelectList, onOpenSettings }: P
         </button>
       </nav>
 
+      {/* This month's spending; tap for the budget screen. */}
+      <button className="budget-summary" onClick={onOpenBudget} aria-label={t.openBudget}>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 7a2 2 0 0 1 2-2h11v4M4 7v10a2 2 0 0 0 2 2h13V9H6a2 2 0 0 1-2-2zM16 14h.01" />
+        </svg>
+        <span className="budget-summary-text">
+          {budget
+            ? t.spentOf(formatRs(monthSpent), formatRs(budget))
+            : monthSpent > 0
+              ? t.spentThisMonth(formatRs(monthSpent))
+              : t.tapToSetBudget}
+          {budget ? <BudgetBar spent={monthSpent} budget={budget} /> : null}
+        </span>
+        <svg viewBox="0 0 24 24" aria-hidden="true" className="chevron">
+          <path d="M9 6l6 6-6 6" />
+        </svg>
+      </button>
+
       <main>
         {!loaded ? (
           <p className="loading">{t.loadingList}</p>
@@ -215,16 +249,25 @@ export function ListScreen({ list, lists, uid, onSelectList, onOpenSettings }: P
 
         {bought.length > 0 && (
           <section className="bought">
-            <button
-              className="bought-toggle"
-              aria-expanded={showBought}
-              onClick={() => setShowBought((s) => !s)}
-            >
-              <svg viewBox="0 0 24 24" aria-hidden="true" className={showBought ? 'open' : ''}>
-                <path d="M9 6l6 6-6 6" />
-              </svg>
-              {t.bought(bought.length)}{boughtTotal != null && ` · ${formatRs(boughtTotal)}`}
-            </button>
+            <div className="bought-row">
+              <button
+                className="bought-toggle"
+                aria-expanded={showBought}
+                onClick={() => setShowBought((s) => !s)}
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true" className={showBought ? 'open' : ''}>
+                  <path d="M9 6l6 6-6 6" />
+                </svg>
+                {t.bought(bought.length)}
+                {boughtTotal != null && ` · ${formatRs(boughtTotal)}`}
+              </button>
+              <button className="done-button" onClick={() => setPanel('done')}>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5 12.5l4.5 4.5L19 7.5" />
+                </svg>
+                {t.doneShopping}
+              </button>
+            </div>
             {showBought && <ul className="list">{bought.map((item, i) => renderRow(item, i, false))}</ul>}
           </section>
         )}
@@ -250,11 +293,28 @@ export function ListScreen({ list, lists, uid, onSelectList, onOpenSettings }: P
         />
       )}
       {panel === 'share' && <ShareSheet list={list} uid={uid} onClose={() => setPanel(null)} />}
+      {panel === 'done' && (
+        <TripSheet
+          mode="done"
+          bought={bought}
+          onSave={(input) => {
+            finishShopping(listId, uid, bought, input);
+            setSaved(t.shopSaved(formatRs(input.total), input.store.trim()));
+          }}
+          onClose={() => setPanel(null)}
+        />
+      )}
       {panel === 'new' && (
         <NewListSheet uid={uid} onCreated={onSelectList} onClose={() => setPanel(null)} />
       )}
 
       <div className="bottom">
+        {saved && !deleted && (
+          <div className="toast" role="status">
+            <span>{saved}</span>
+            <button onClick={onOpenBudget}>{t.budget}</button>
+          </div>
+        )}
         {deleted && (
           <div className="toast" role="status">
             <span>
