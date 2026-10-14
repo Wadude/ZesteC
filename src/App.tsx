@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { ListScreen } from './ListScreen';
 import { SettingsScreen } from './SettingsScreen';
+import { listName } from './i18n';
+import { useI18n } from './useI18n';
 import { useLists } from './useLists';
 import { useSession } from './useSession';
 import { useTheme } from './useTheme';
@@ -19,10 +21,12 @@ function takeJoinCode(): string | null {
 const initialJoinCode = takeJoinCode();
 
 export default function App() {
+  const { t } = useI18n();
   const { profile, error, refresh } = useSession();
   const { lists, current, ready, select, joinResult, clearJoinResult } = useLists(
     profile?.uid,
     initialJoinCode,
+    t.defaultListName,
   );
   const [theme, setTheme] = useTheme();
   const [screen, setScreen] = useState<Screen>(screenFromHash);
@@ -56,10 +60,10 @@ export default function App() {
   if (error) {
     return (
       <div className="splash">
-        <p className="splash-title">Something went wrong</p>
-        <p>{error}</p>
+        <p className="splash-title">{t.errorTitle}</p>
+        <p>{t.errorConnect}</p>
         <button className="splash-button" onClick={() => location.reload()}>
-          Try again
+          {t.tryAgain}
         </button>
       </div>
     );
@@ -69,7 +73,7 @@ export default function App() {
     return (
       <div className="splash">
         <p className="splash-title">Zeste</p>
-        <p>{initialJoinCode ? 'Joining the shared list…' : 'Getting your list ready…'}</p>
+        <p>{initialJoinCode ? t.joining : t.gettingReady}</p>
       </div>
     );
   }
@@ -100,8 +104,10 @@ export default function App() {
       {joinResult && (
         <div className="banner" role="status" onClick={clearJoinResult}>
           {joinResult.status === 'joined'
-            ? `You joined "${lists.find((l) => l.id === joinResult.listId)?.name ?? 'the list'}". Changes sync live.`
-            : joinResult.reason}
+            ? t.joined(listName(lists.find((l) => l.id === joinResult.listId)?.name ?? t.theList, t))
+            : joinResult.reason === 'offline'
+              ? t.joinOffline
+              : t.joinInvalid}
         </div>
       )}
     </>

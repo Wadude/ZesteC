@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import type { Item } from './types';
 import { formatRs, itemDetails, lineTotal } from './units';
+import { useI18n } from './useI18n';
 
 const SWIPE_DELETE_PX = 96;
 
@@ -24,6 +25,7 @@ interface Props {
 }
 
 export function ItemRow({ item, onToggle, onOpen, onDelete, reorder }: Props) {
+  const { t } = useI18n();
   const [dx, setDx] = useState(0);
   const startX = useRef<number | null>(null);
   const swiped = useRef(false);
@@ -55,7 +57,7 @@ export function ItemRow({ item, onToggle, onOpen, onDelete, reorder }: Props) {
     fn();
   };
 
-  const details = itemDetails(item);
+  const details = itemDetails(item, t);
   const total = lineTotal(item);
 
   return (
@@ -64,8 +66,8 @@ export function ItemRow({ item, onToggle, onOpen, onDelete, reorder }: Props) {
       style={reorder?.offsetY ? { transform: `translateY(${reorder.offsetY}px)` } : undefined}
     >
       <div className="row-bg" aria-hidden="true">
-        <span>Delete</span>
-        <span>Delete</span>
+        <span>{t.swipeDelete}</span>
+        <span>{t.swipeDelete}</span>
       </div>
       <div
         className={`row${item.checked ? ' checked' : ''}${dx ? ' dragging' : ''}`}
@@ -79,7 +81,7 @@ export function ItemRow({ item, onToggle, onOpen, onDelete, reorder }: Props) {
         {reorder && (
           <button
             className="grip"
-            aria-label={`Move ${item.name}. Use the up and down arrow keys.`}
+            aria-label={t.moveItem(item.name)}
             onPointerDown={(e) => {
               // Keep this from also starting a swipe on the row.
               e.stopPropagation();
@@ -114,7 +116,7 @@ export function ItemRow({ item, onToggle, onOpen, onDelete, reorder }: Props) {
           className="check"
           role="checkbox"
           aria-checked={item.checked}
-          aria-label={item.checked ? `Mark ${item.name} as not bought` : `Mark ${item.name} as bought`}
+          aria-label={item.checked ? t.markNotBought(item.name) : t.markBought(item.name)}
           onClick={unlessSwiped(onToggle)}
         >
           <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -129,7 +131,7 @@ export function ItemRow({ item, onToggle, onOpen, onDelete, reorder }: Props) {
 
         {total != null && <span className="line-total">{formatRs(total)}</span>}
 
-        <button className="delete" aria-label={`Delete ${item.name}`} onClick={unlessSwiped(onDelete)}>
+        <button className="delete" aria-label={t.deleteItem(item.name)} onClick={unlessSwiped(onDelete)}>
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M6 6l12 12M18 6L6 18" />
           </svg>

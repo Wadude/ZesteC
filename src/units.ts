@@ -1,3 +1,4 @@
+import type { Messages } from './i18n';
 import type { Item, Unit } from './types';
 
 export const UNITS: Unit[] = ['pcs', 'pack', 'g', 'kg', 'ml', 'L'];
@@ -10,9 +11,16 @@ export function priceBasis(unit: Unit): 'kg' | 'L' | 'each' {
 }
 
 /** Label for the "per ..." side of the Per / Total switch. */
-export function perLabel(unit: Unit): string {
+export function perLabel(unit: Unit, t: Messages): string {
   const basis = priceBasis(unit);
-  return basis === 'each' ? (unit === 'pack' ? 'Per pack' : 'Each') : `Per ${basis}`;
+  if (basis === 'kg') return t.perKg;
+  if (basis === 'L') return t.perL;
+  return unit === 'pack' ? t.perPack : t.perEach;
+}
+
+/** Name shown on the unit buttons. */
+export function unitLabel(unit: Unit, t: Messages): string {
+  return unit === 'pcs' || unit === 'pack' ? t.unitChip[unit] : unit;
 }
 
 /** Sensible +/- step for each unit. */
@@ -68,26 +76,29 @@ export function formatRs(n: number): string {
   })}`;
 }
 
-/** "500 g", "1.5 L", "2 pcs", "1 pack". */
-export function formatQuantity(q: number, unit: Unit): string {
+/** "500 g", "1.5 L", "2 pcs", "1 pack" (in the current language). */
+export function formatQuantity(q: number, unit: Unit, t: Messages): string {
   const n = round(q).toLocaleString('en', { maximumFractionDigits: 3 });
-  if (unit === 'pcs') return `${n} ${q === 1 ? 'pc' : 'pcs'}`;
-  if (unit === 'pack') return `${n} ${q === 1 ? 'pack' : 'packs'}`;
+  if (unit === 'pcs') return `${n} ${t.pieces(q === 1)}`;
+  if (unit === 'pack') return `${n} ${t.packs(q === 1)}`;
   return `${n} ${unit}`;
 }
 
 /** Small grey line under the item name, e.g. "500 g · Rs 60/kg". */
-export function itemDetails(item: Item): string | null {
+export function itemDetails(item: Item, t: Messages): string | null {
   const unit = item.unit ?? 'pcs';
   const parts: string[] = [];
-  if (item.quantity != null) parts.push(formatQuantity(item.quantity, unit));
+  if (item.quantity != null) parts.push(formatQuantity(item.quantity, unit, t));
   // A total price is already shown on the right, so only describe per-unit prices.
   if (item.price != null && !item.priceIsTotal) {
     const basis = priceBasis(unit);
+    const price = formatRs(item.price);
     parts.push(
-      basis === 'each'
-        ? `${formatRs(item.price)} ${unit === 'pack' ? 'per pack' : 'each'}`
-        : `${formatRs(item.price)}/${basis}`,
+      basis !== 'each'
+        ? `${price}/${basis}`
+        : unit === 'pack'
+          ? t.pricePerPack(price)
+          : t.priceEach(price),
     );
   }
   return parts.length ? parts.join(' · ') : null;
@@ -96,9 +107,10 @@ export function itemDetails(item: Item): string | null {
 // --- Understanding "Rice 5kg", "2 eggs", "Coke 1.5L" typed in the add bar ---
 
 const UNIT_WORDS: Record<string, Unit> = {
-  pc: 'pcs', pcs: 'pcs', piece: 'pcs', pieces: 'pcs',
-  pack: 'pack', packs: 'pack', pkt: 'pack', packet: 'pack', packets: 'pack',
-  g: 'g', gm: 'g', gms: 'g', gr: 'g', gram: 'g', grams: 'g',
+  // English, French and Kreol words
+  pc: 'pcs', pcs: 'pcs', piece: 'pcs', pieces: 'pcs', pce: 'pcs', pièce: 'pcs', pièces: 'pcs', pies: 'pcs',
+  pack: 'pack', packs: 'pack', pkt: 'pack', packet: 'pack', packets: 'pack', paquet: 'pack', paquets: 'pack', pake: 'pack',
+  g: 'g', gm: 'g', gms: 'g', gr: 'g', gram: 'g', grams: 'g', gramme: 'g', grammes: 'g',
   kg: 'kg', kgs: 'kg', kilo: 'kg', kilos: 'kg',
   ml: 'ml',
   l: 'L', lt: 'L', ltr: 'L', litre: 'L', litres: 'L', liter: 'L', liters: 'L',

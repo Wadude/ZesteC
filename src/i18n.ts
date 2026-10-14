@@ -1,0 +1,385 @@
+// All text shown in the app, in English, French and Mauritian Creole (Kreol Morisien).
+// To change a wording, edit it here. Every language must have every key (TypeScript checks this).
+
+export type Lang = 'en' | 'fr' | 'mfe';
+
+export const LANGUAGES: { value: Lang; label: string }[] = [
+  { value: 'en', label: 'English' },
+  { value: 'fr', label: 'Français' },
+  { value: 'mfe', label: 'Kreol' },
+];
+
+const en = {
+  // Loading and errors
+  gettingReady: 'Getting your list ready…',
+  joining: 'Joining the shared list…',
+  errorTitle: 'Something went wrong',
+  errorConnect: 'Could not connect. Check your internet connection and try again.',
+  tryAgain: 'Try again',
+
+  // List screen
+  switchList: (name: string) => `${name}. Switch list`,
+  nothingToBuy: 'Nothing to buy',
+  toBuy: (n: number) => `${n} to buy`,
+  shareList: 'Share list',
+  sharedWith: (others: number) => `Shared with ${others} more. Share settings`,
+  settings: 'Settings',
+  loadingList: 'Loading your list…',
+  emptyTitle: 'Your list is empty',
+  emptyHint: 'Add your first item below.',
+  bought: (n: number) => `Bought (${n})`,
+  deleted: 'Deleted',
+  undo: 'Undo',
+  addPlaceholder: 'Add an item, e.g. Rice 5kg…',
+  newItem: 'New item',
+  add: 'Add',
+
+  // Item row
+  markBought: (name: string) => `Mark ${name} as bought`,
+  markNotBought: (name: string) => `Mark ${name} as not bought`,
+  moveItem: (name: string) => `Move ${name}. Use the up and down arrow keys.`,
+  deleteItem: (name: string) => `Delete ${name}`,
+  swipeDelete: 'Delete',
+
+  // Item edit panel
+  editItem: (name: string) => `Edit ${name}`,
+  item: 'Item',
+  quantity: 'Quantity',
+  less: 'Less',
+  more: 'More',
+  unit: 'Unit',
+  price: 'Price',
+  priceIs: 'Price is',
+  total: 'Total',
+  addPriceHint: 'Add a price to see the total',
+  delete: 'Delete',
+  cancel: 'Cancel',
+  save: 'Save',
+
+  // Units
+  unitChip: { pcs: 'pcs', pack: 'pack' },
+  pieces: (one: boolean): string => (one ? 'pc' : 'pcs'),
+  packs: (one: boolean): string => (one ? 'pack' : 'packs'),
+  priceEach: (price: string) => `${price} each`,
+  pricePerPack: (price: string) => `${price} per pack`,
+  perEach: 'Each',
+  perPack: 'Per pack',
+  perKg: 'Per kg',
+  perL: 'Per L',
+
+  // Settings
+  back: 'Back',
+  account: 'Account',
+  guestText:
+    "You're using Zeste as a guest. Sign in to keep your list safe and use it on your other devices.",
+  signInGoogle: 'Sign in with Google',
+  signingIn: 'Signing in…',
+  signedIn: 'Signed in',
+  signOut: 'Sign out',
+  welcomeBack: 'Welcome back! Your items from this device were added to your list.',
+  signInFailed: 'Sign-in did not work. Please try again.',
+  appearance: 'Appearance',
+  theme: 'Theme',
+  themeSystem: 'System',
+  themeLight: 'Light',
+  themeDark: 'Dark',
+  language: 'Language',
+  version: (v: string) => `Zeste · version ${v}`,
+
+  // Share panel
+  shareTitle: (name: string) => `Share ${name}`,
+  listName: 'List name',
+  shareThis: 'Share this list',
+  shareExplain:
+    "Anyone with the link can see and change this list. Changes show up on everyone's phone straight away.",
+  sendInvite: 'Send invite link',
+  pleaseWait: 'Please wait…',
+  inviteCode: 'Invite code',
+  copyLink: 'Copy link',
+  newLink: 'New link',
+  people: (n: number) => `People (${n})`,
+  you: '(you)',
+  owner: 'Owner',
+  guest: 'Guest',
+  leaveList: 'Leave this list',
+  confirmLeave: (name: string) => `Leave "${name}"? You'll need a new invite to join again.`,
+  inviteText: (name: string) => `Join my grocery list "${name}" on Zeste`,
+  inviteCopied: 'Invite link copied. Paste it into WhatsApp, SMS or email.',
+  linkCopied: 'Link copied.',
+  newLinkMade: 'New link made. The old link no longer works.',
+  needOnline: "You need to be online for this. Try again when you're connected.",
+  genericError: 'Something went wrong. Please try again.',
+
+  // Lists panel
+  yourLists: 'Your lists',
+  sharedPeople: (n: number) => `Shared · ${n} people`,
+  justYou: 'Just you',
+  deleteList: (name: string) => `Delete ${name}`,
+  confirmDeleteList: (name: string, shared: boolean) =>
+    `Delete "${name}" and everything on it?` +
+    (shared ? ' It will also disappear for everyone you shared it with.' : ''),
+  deleteListFailed: "Couldn't delete the list. You need to be online for this.",
+  newListPlaceholder: 'New list, e.g. Party',
+  newListName: 'New list name',
+  create: 'Create',
+  defaultListName: 'My list',
+  untitledList: 'New list',
+
+  // Joining
+  joined: (name: string) => `You joined "${name}". Changes sync live.`,
+  theList: 'the list',
+  joinOffline: "You're offline. Open the invite link again when you're connected.",
+  joinInvalid: 'This invite link is no longer valid. Ask for a new one.',
+};
+
+export type Messages = typeof en;
+
+const fr: Messages = {
+  gettingReady: 'Préparation de votre liste…',
+  joining: 'Connexion à la liste partagée…',
+  errorTitle: 'Un problème est survenu',
+  errorConnect: 'Connexion impossible. Vérifiez votre connexion internet et réessayez.',
+  tryAgain: 'Réessayer',
+
+  switchList: (name) => `${name}. Changer de liste`,
+  nothingToBuy: 'Rien à acheter',
+  toBuy: (n) => `${n} à acheter`,
+  shareList: 'Partager la liste',
+  sharedWith: (others) =>
+    `Partagée avec ${others} ${others === 1 ? 'personne' : 'personnes'}. Options de partage`,
+  settings: 'Réglages',
+  loadingList: 'Chargement de votre liste…',
+  emptyTitle: 'Votre liste est vide',
+  emptyHint: 'Ajoutez votre premier article ci-dessous.',
+  bought: (n) => `Acheté (${n})`,
+  deleted: 'Supprimé :',
+  undo: 'Annuler',
+  addPlaceholder: 'Ajouter un article, ex. Riz 5kg…',
+  newItem: 'Nouvel article',
+  add: 'Ajouter',
+
+  markBought: (name) => `Marquer ${name} comme acheté`,
+  markNotBought: (name) => `Marquer ${name} comme non acheté`,
+  moveItem: (name) => `Déplacer ${name}. Utilisez les flèches haut et bas.`,
+  deleteItem: (name) => `Supprimer ${name}`,
+  swipeDelete: 'Supprimer',
+
+  editItem: (name) => `Modifier ${name}`,
+  item: 'Article',
+  quantity: 'Quantité',
+  less: 'Moins',
+  more: 'Plus',
+  unit: 'Unité',
+  price: 'Prix',
+  priceIs: 'Le prix est',
+  total: 'Total',
+  addPriceHint: 'Ajoutez un prix pour voir le total',
+  delete: 'Supprimer',
+  cancel: 'Annuler',
+  save: 'Enregistrer',
+
+  unitChip: { pcs: 'pce', pack: 'paquet' },
+  pieces: (one) => (one ? 'pièce' : 'pièces'),
+  packs: (one) => (one ? 'paquet' : 'paquets'),
+  priceEach: (price) => `${price} la pièce`,
+  pricePerPack: (price) => `${price} le paquet`,
+  perEach: 'La pièce',
+  perPack: 'Le paquet',
+  perKg: 'Le kg',
+  perL: 'Le L',
+
+  back: 'Retour',
+  account: 'Compte',
+  guestText:
+    'Vous utilisez Zeste en invité. Connectez-vous pour garder votre liste en sécurité et la retrouver sur vos autres appareils.',
+  signInGoogle: 'Se connecter avec Google',
+  signingIn: 'Connexion…',
+  signedIn: 'Connecté',
+  signOut: 'Se déconnecter',
+  welcomeBack: 'Bon retour ! Les articles de cet appareil ont été ajoutés à votre liste.',
+  signInFailed: "La connexion n'a pas fonctionné. Veuillez réessayer.",
+  appearance: 'Apparence',
+  theme: 'Thème',
+  themeSystem: 'Système',
+  themeLight: 'Clair',
+  themeDark: 'Sombre',
+  language: 'Langue',
+  version: (v) => `Zeste · version ${v}`,
+
+  shareTitle: (name) => `Partager ${name}`,
+  listName: 'Nom de la liste',
+  shareThis: 'Partager cette liste',
+  shareExplain:
+    'Toute personne ayant le lien peut voir et modifier cette liste. Les changements apparaissent tout de suite sur tous les téléphones.',
+  sendInvite: "Envoyer le lien d'invitation",
+  pleaseWait: 'Un instant…',
+  inviteCode: "Code d'invitation",
+  copyLink: 'Copier le lien',
+  newLink: 'Nouveau lien',
+  people: (n) => `Personnes (${n})`,
+  you: '(vous)',
+  owner: 'Propriétaire',
+  guest: 'Invité',
+  leaveList: 'Quitter cette liste',
+  confirmLeave: (name) =>
+    `Quitter « ${name} » ? Il vous faudra une nouvelle invitation pour revenir.`,
+  inviteText: (name) => `Rejoins ma liste de courses « ${name} » sur Zeste`,
+  inviteCopied: "Lien d'invitation copié. Collez-le dans WhatsApp, un SMS ou un e-mail.",
+  linkCopied: 'Lien copié.',
+  newLinkMade: "Nouveau lien créé. L'ancien lien ne fonctionne plus.",
+  needOnline: 'Vous devez être connecté à internet pour cela. Réessayez une fois connecté.',
+  genericError: 'Un problème est survenu. Veuillez réessayer.',
+
+  yourLists: 'Vos listes',
+  sharedPeople: (n) => `Partagée · ${n} personnes`,
+  justYou: 'Vous seul',
+  deleteList: (name) => `Supprimer ${name}`,
+  confirmDeleteList: (name, shared) =>
+    `Supprimer « ${name} » et tout son contenu ?` +
+    (shared ? ' Elle disparaîtra aussi pour les personnes avec qui vous la partagez.' : ''),
+  deleteListFailed: "Impossible de supprimer la liste. Vous devez être connecté à internet.",
+  newListPlaceholder: 'Nouvelle liste, ex. Fête',
+  newListName: 'Nom de la nouvelle liste',
+  create: 'Créer',
+  defaultListName: 'Ma liste',
+  untitledList: 'Nouvelle liste',
+
+  joined: (name) => `Vous avez rejoint « ${name} ». Les changements se synchronisent en direct.`,
+  theList: 'la liste',
+  joinOffline: "Vous êtes hors ligne. Rouvrez le lien d'invitation une fois connecté.",
+  joinInvalid: "Ce lien d'invitation n'est plus valable. Demandez-en un nouveau.",
+};
+
+// Kreol Morisien, following the standard spelling (Lortograf Linifye).
+const mfe: Messages = {
+  gettingReady: 'Nou pe prepar ou lalis…',
+  joining: 'Nou pe rant ou dan lalis partaze-la…',
+  errorTitle: 'Ena enn problem',
+  errorConnect: 'Pa finn kapav konekte. Get ou koneksion internet ek esey ankor.',
+  tryAgain: 'Esey ankor',
+
+  switchList: (name) => `${name}. Sanz lalis`,
+  nothingToBuy: 'Nanye pou aste',
+  toBuy: (n) => `${n} pou aste`,
+  shareList: 'Partaz lalis',
+  sharedWith: (others) => `Partaze avek ${others} lot dimoun. Paramet partaz`,
+  settings: 'Paramet',
+  loadingList: 'Pe sarz ou lalis…',
+  emptyTitle: 'Ou lalis vid',
+  emptyHint: 'Ajout ou premie zafer anba.',
+  bought: (n) => `Finn aste (${n})`,
+  deleted: 'Finn efase:',
+  undo: 'Defer',
+  addPlaceholder: 'Ajout enn zafer, egz. Diri 5kg…',
+  newItem: 'Nouvo zafer',
+  add: 'Ajoute',
+
+  markBought: (name) => `Marke ${name} kouma finn aste`,
+  markNotBought: (name) => `Marke ${name} kouma pa ankor aste`,
+  moveItem: (name) => `Bouz ${name}. Servi bann fles lao ek anba.`,
+  deleteItem: (name) => `Efas ${name}`,
+  swipeDelete: 'Efase',
+
+  editItem: (name) => `Modifie ${name}`,
+  item: 'Zafer',
+  quantity: 'Kantite',
+  less: 'Mwins',
+  more: 'Plis',
+  unit: 'Inite',
+  price: 'Pri',
+  priceIs: 'Pri-la se',
+  total: 'Total',
+  addPriceHint: 'Met enn pri pou trouv total-la',
+  delete: 'Efase',
+  cancel: 'Anile',
+  save: 'Sov',
+
+  unitChip: { pcs: 'pies', pack: 'pake' },
+  pieces: () => 'pies',
+  packs: () => 'pake',
+  priceEach: (price) => `${price} sakenn`,
+  pricePerPack: (price) => `${price} par pake`,
+  perEach: 'Sakenn',
+  perPack: 'Par pake',
+  perKg: 'Par kg',
+  perL: 'Par L',
+
+  back: 'Retour',
+  account: 'Kont',
+  guestText:
+    'Ou pe servi Zeste kouma envite. Konekte pou gard ou lalis an sekirite ek servi li lor ou lezot aparey.',
+  signInGoogle: 'Konekte avek Google',
+  signingIn: 'Pe konekte…',
+  signedIn: 'Konekte',
+  signOut: 'Dekonekte',
+  welcomeBack: 'Bonretour! Bann zafer ki ti lor sa aparey-la finn ajoute dan ou lalis.',
+  signInFailed: 'Koneksion-la pa finn marse. Esey ankor.',
+  appearance: 'Aparans',
+  theme: 'Tem',
+  themeSystem: 'Sistem',
+  themeLight: 'Kler',
+  themeDark: 'Nwar',
+  language: 'Lang',
+  version: (v) => `Zeste · versyon ${v}`,
+
+  shareTitle: (name) => `Partaz ${name}`,
+  listName: 'Nom lalis',
+  shareThis: 'Partaz sa lalis-la',
+  shareExplain:
+    'Nimport ki dimoun ki ena lien-la kapav trouv ek sanz sa lalis-la. Bann sanzman parett touswit lor telefonn tou dimoun.',
+  sendInvite: 'Avoy lien invitasion',
+  pleaseWait: 'Atann enn ti moman…',
+  inviteCode: 'Kod invitasion',
+  copyLink: 'Kopie lien',
+  newLink: 'Nouvo lien',
+  people: (n) => `Dimoun (${n})`,
+  you: '(ou)',
+  owner: 'Proprieter',
+  guest: 'Envite',
+  leaveList: 'Kit sa lalis-la',
+  confirmLeave: (name) => `Kit "${name}"? Ou pou bizin enn nouvo invitasion pou retourne.`,
+  inviteText: (name) => `Vinn lor mo lalis komisyon "${name}" lor Zeste`,
+  inviteCopied: 'Lien invitasion-la finn kopie. Koll li dan WhatsApp, SMS ouswa email.',
+  linkCopied: 'Lien-la finn kopie.',
+  newLinkMade: 'Enn nouvo lien finn fer. Ansien lien-la pa marse aster.',
+  needOnline: 'Ou bizin konekte lor internet pou sa. Esey ankor kan ou konekte.',
+  genericError: 'Ena enn problem. Esey ankor.',
+
+  yourLists: 'Ou bann lalis',
+  sharedPeople: (n) => `Partaze · ${n} dimoun`,
+  justYou: 'Zis ou',
+  deleteList: (name) => `Efas ${name}`,
+  confirmDeleteList: (name, shared) =>
+    `Efas "${name}" ek tou seki lor li?` +
+    (shared ? ' Li pou disparet osi pou tou dimoun ki ou finn partaz li avek.' : ''),
+  deleteListFailed: 'Pa finn kapav efas lalis-la. Ou bizin konekte lor internet pou sa.',
+  newListPlaceholder: 'Nouvo lalis, egz. Lafet',
+  newListName: 'Nom nouvo lalis',
+  create: 'Kree',
+  defaultListName: 'Mo lalis',
+  untitledList: 'Nouvo lalis',
+
+  joined: (name) => `Ou finn rant dan "${name}". Bann sanzman sinkronize an direk.`,
+  theList: 'lalis-la',
+  joinOffline: 'Ou pa konekte. Rouver lien invitasion-la kan ou konekte.',
+  joinInvalid: 'Sa lien invitasion-la pa valab aster. Demann enn nouvo.',
+};
+
+export const MESSAGES: Record<Lang, Messages> = { en, fr, mfe };
+
+/** First visit: use the phone's language if we have it, otherwise English. */
+export function detectLang(): Lang {
+  for (const l of navigator.languages ?? [navigator.language]) {
+    const code = l.toLowerCase();
+    if (code.startsWith('mfe')) return 'mfe';
+    if (code.startsWith('fr')) return 'fr';
+    if (code.startsWith('en')) return 'en';
+  }
+  return 'en';
+}
+
+/** The automatic first-list name shows in the current language; names people chose stay as typed. */
+export function listName(name: string, t: Messages): string {
+  const defaults = Object.values(MESSAGES).map((m) => m.defaultListName);
+  return defaults.includes(name) ? t.defaultListName : name;
+}

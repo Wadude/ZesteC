@@ -8,7 +8,9 @@ import {
   lineTotal,
   perLabel,
   stepFor,
+  unitLabel,
 } from './units';
+import { useI18n } from './useI18n';
 
 interface Props {
   item: Item;
@@ -26,6 +28,7 @@ function parseNumber(s: string): number | null {
 const show = (n: number | undefined | null) => (n == null ? '' : String(Math.round(n * 1000) / 1000));
 
 export function ItemSheet({ item, onSave, onDelete, onClose }: Props) {
+  const { t } = useI18n();
   const [name, setName] = useState(item.name);
   const [unit, setUnit] = useState<Unit>(item.unit ?? 'pcs');
   const [qty, setQty] = useState(show(item.quantity));
@@ -79,21 +82,21 @@ export function ItemSheet({ item, onSave, onDelete, onClose }: Props) {
         className="sheet"
         role="dialog"
         aria-modal="true"
-        aria-label={`Edit ${item.name}`}
+        aria-label={t.editItem(item.name)}
         onClick={(e) => e.stopPropagation()}
         onSubmit={save}
       >
         <div className="sheet-handle" aria-hidden="true" />
 
         <label className="field">
-          <span>Item</span>
+          <span>{t.item}</span>
           <input value={name} onChange={(e) => setName(e.target.value)} autoComplete="off" />
         </label>
 
         <div className="field">
-          <span id="qty-label">Quantity</span>
+          <span id="qty-label">{t.quantity}</span>
           <div className="qty-row">
-            <button type="button" className="step" aria-label="Less" onClick={() => step(-1)}>
+            <button type="button" className="step" aria-label={t.less} onClick={() => step(-1)}>
               −
             </button>
             <input
@@ -103,11 +106,11 @@ export function ItemSheet({ item, onSave, onDelete, onClose }: Props) {
               value={qty}
               onChange={(e) => setQty(e.target.value)}
             />
-            <button type="button" className="step" aria-label="More" onClick={() => step(1)}>
+            <button type="button" className="step" aria-label={t.more} onClick={() => step(1)}>
               +
             </button>
           </div>
-          <div className="chips" role="radiogroup" aria-label="Unit">
+          <div className="chips" role="radiogroup" aria-label={t.unit}>
             {UNITS.map((u) => (
               <button
                 key={u}
@@ -117,14 +120,14 @@ export function ItemSheet({ item, onSave, onDelete, onClose }: Props) {
                 className={unit === u ? 'chip active' : 'chip'}
                 onClick={() => changeUnit(u)}
               >
-                {u}
+                {unitLabel(u, t)}
               </button>
             ))}
           </div>
         </div>
 
         <div className="field">
-          <span id="price-label">Price</span>
+          <span id="price-label">{t.price}</span>
           <div className="price-row">
             <div className="price-input">
               <span aria-hidden="true">Rs</span>
@@ -136,7 +139,7 @@ export function ItemSheet({ item, onSave, onDelete, onClose }: Props) {
                 onChange={(e) => setPrice(e.target.value)}
               />
             </div>
-            <div className="segmented compact" role="radiogroup" aria-label="Price is">
+            <div className="segmented compact" role="radiogroup" aria-label={t.priceIs}>
               <button
                 type="button"
                 role="radio"
@@ -144,7 +147,7 @@ export function ItemSheet({ item, onSave, onDelete, onClose }: Props) {
                 className={!isTotal ? 'active' : ''}
                 onClick={() => setIsTotal(false)}
               >
-                {perLabel(unit)}
+                {perLabel(unit, t)}
               </button>
               <button
                 type="button"
@@ -153,7 +156,7 @@ export function ItemSheet({ item, onSave, onDelete, onClose }: Props) {
                 className={isTotal ? 'active' : ''}
                 onClick={() => setIsTotal(true)}
               >
-                Total
+                {t.total}
               </button>
             </div>
           </div>
@@ -162,10 +165,10 @@ export function ItemSheet({ item, onSave, onDelete, onClose }: Props) {
         <p className="sheet-total" aria-live="polite">
           {total != null ? (
             <>
-              Total <strong>{formatRs(total)}</strong>
+              {t.total} <strong>{formatRs(total)}</strong>
             </>
           ) : (
-            'Add a price to see the total'
+            t.addPriceHint
           )}
         </p>
 
@@ -178,14 +181,14 @@ export function ItemSheet({ item, onSave, onDelete, onClose }: Props) {
               onClose();
             }}
           >
-            Delete
+            {t.delete}
           </button>
           <span className="spacer" />
           <button type="button" className="secondary-button small" onClick={onClose}>
-            Cancel
+            {t.cancel}
           </button>
           <button type="submit" className="primary-button" disabled={!name.trim()}>
-            Save
+            {t.save}
           </button>
         </div>
       </form>

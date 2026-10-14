@@ -4,6 +4,8 @@ import { db } from './firebase';
 import { getOrCreateInvite, inviteUrl, leaveList, renameList, resetInvite } from './lists';
 import { Sheet } from './Sheet';
 import type { List } from './types';
+import { listName } from './i18n';
+import { useI18n } from './useI18n';
 
 interface Props {
   list: List;
@@ -13,11 +15,11 @@ interface Props {
 
 interface Member {
   uid: string;
-  name: string;
+  name: string | null;
   photoURL: string | null;
 }
 
-/** Names and photos of a list's members. Guests show as "Guest". */
+/** Names and photos of a list's members. Guests have no name. */
 function useMembers(memberIds: string[]) {
   const [members, setMembers] = useState<Member[]>([]);
   const key = memberIds.join(',');
@@ -27,7 +29,7 @@ function useMembers(memberIds: string[]) {
       memberIds.map(async (uid) => {
         const snap = await getDoc(doc(db, 'users', uid)).catch(() => null);
         const data = snap?.data();
-        return { uid, name: (data?.name as string) ?? 'Guest', photoURL: (data?.photoURL as string) ?? null };
+        return { uid, name: (data?.name as string) ?? null, photoURL: (data?.photoURL as string) ?? null };
       }),
     ).then((m) => !cancelled && setMembers(m));
     return () => {
@@ -38,7 +40,9 @@ function useMembers(memberIds: string[]) {
 }
 
 export function ShareSheet({ list, uid, onClose }: Props) {
-  const [name, setName] = useState(list.name);
+  const { t } = useI18n();
+  const displayName = listName(list.name, t);
+  const [name, setName] = useState(displayName);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const members = useMembers(list.memberIds);
@@ -52,9 +56,7 @@ export function ShareSheet({ list, uid, onClose }: Props) {
     } catch (e) {
       console.error(e);
       setMessage(
-        (e as Error).message === 'offline'
-          ? "You need to be online for this. Try again when you're connected."
-          : 'Something went wrong. Please try again.',
+        (e as Error).message === 'offline' ? t.needOnline : t.genericError,
       );
     } finally {
       setBusy(false);
@@ -64,7 +66,7 @@ export function ShareSheet({ list, uid, onClose }: Props) {
   const share = () =>
     run(async () => {
       const url = inviteUrl(await getOrCreateInvite(list, uid));
-      const text = `Join my grocery list "${list.name}" on Zeste`;
+      const text = t.inviteText(displayName);
       if (navigator.share) {
         try {
           await navigator.share({ title: 'Zeste', text, url });
@@ -74,37 +76,37 @@ export function ShareSheet({ list, uid, onClose }: Props) {
         }
       }
       await navigator.clipboard.writeText(`${text}: ${url}`);
-      setMessage('Invite link copied. Paste it into WhatsApp, SMS or email.');
+      setMessage(t.inviteCopied);
     });
 
   const copyLink = () =>
     run(async () => {
       const url = inviteUrl(await getOrCreateInvite(list, uid));
       await navigator.clipboard.writeText(url);
-      setMessage('Link copied.');
+      setMessage(t.linkCopied);
     });
 
   const reset = () =>
     run(async () => {
       await resetInvite(list, uid);
-      setMessage('New link made. The old link no longer works.');
+      setMessage(t.newLinkMade);
     });
 
   const leave = () =>
     run(async () => {
-      if (!confirm(`Leave "${list.name}"? You'll need a new invite to join again.`)) return;
+      if (!confirm(t.confirmLeave(displayName))) return;
       await leaveList(list.id, uid);
       onClose();
     });
 
   const saveName = () => {
-    if (name.trim() && name.trim() !== list.name) renameList(list.id, name);
+    if (name.trim() && name.trim() !== displayName) renameList(list.id, name);
   };
 
   return (
-    <Sheet label={`Share ${list.name}`} onClose={onClose}>
+    <Sheet label={t.shareTitle(displayName)} onClose={onClose}>
       <label className="field">
-        <span>List name</span>
+        <span>{t.listName}</span>
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -115,24 +117,21 @@ export function ShareSheet({ list, uid, onClose }: Props) {
       </label>
 
       <div className="field">
-        <span>Share this list</span>
-        <p className="muted small">
-          Anyone with the link can see and change this list. Changes show up on everyone's phone straight
-          away.
-        </p>
+        <span>{t.shareThis}</span>
+        <p className="muted small">{t.shareExplain}</p>
         <button type="button" className="primary-button wide" disabled={busy} onClick={share}>
-          {busy ? 'Please wait…' : 'Send invite link'}
+          {busy ? t.pleaseWait : t.sendInvite}
         </button>
         {list.inviteCode && (
           <div className="invite-row">
-            <span className="invite-code" aria-label="Invite code">
+            <span className="invite-code" aria-label={t.inviteCode}>
               {list.inviteCode}
             </span>
             <button type="button" className="link-button" disabled={busy} onClick={copyLink}>
-              Copy link
+              {t.copyLink}
             </button>
             <button type="button" className="link-button" disabled={busy} onClick={reset}>
-              New link
+              {t.newLink}
             </button>
           </div>
         )}
@@ -144,7 +143,7 @@ export function ShareSheet({ list, uid, onClose }: Props) {
       </div>
 
       <div className="field">
-        <span>People ({list.memberIds.length})</span>
+        <span>{t.people(list.memberIds.length)}</span>
         <ul className="members">
           {members.map((m) => (
             <li key={m.uid}>
@@ -152,14 +151,14 @@ export function ShareSheet({ list, uid, onClose }: Props) {
                 <img className="avatar small" src={m.photoURL} alt="" referrerPolicy="no-referrer" />
               ) : (
                 <span className="avatar small avatar-letter" aria-hidden="true">
-                  {m.name.charAt(0).toUpperCase()}
+                  {(m.name ?? t.guest).charAt(0).toUpperCase()}
                 </span>
               )}
               <span className="member-name">
-                {m.name}
-                {m.uid === uid && ' (you)'}
+                {m.name ?? t.guest}
+                {m.uid === uid && ` ${t.you}`}
               </span>
-              {m.uid === list.ownerId && <span className="badge">Owner</span>}
+              {m.uid === list.ownerId && <span className="badge">{t.owner}</span>}
             </li>
           ))}
         </ul>
@@ -167,7 +166,7 @@ export function ShareSheet({ list, uid, onClose }: Props) {
 
       {!isOwner && (
         <button type="button" className="text-danger" disabled={busy} onClick={leave}>
-          Leave this list
+          {t.leaveList}
         </button>
       )}
     </Sheet>

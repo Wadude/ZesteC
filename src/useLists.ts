@@ -37,13 +37,15 @@ function migrateLegacyItems(listId: string, uid: string) {
     .catch((e) => console.error('Could not move old items', e));
 }
 
-export type JoinResult = { status: 'joined'; listId: string } | { status: 'failed'; reason: string };
+export type JoinResult =
+  | { status: 'joined'; listId: string }
+  | { status: 'failed'; reason: 'offline' | 'invalid' };
 
 /**
  * All lists the user belongs to, which one is open, and joining via invite links.
  * `joinCode` comes from a /join/CODE link the app was opened with.
  */
-export function useLists(uid: string | undefined, joinCode: string | null) {
+export function useLists(uid: string | undefined, joinCode: string | null, defaultListName: string) {
   const [lists, setLists] = useState<List[]>([]);
   const [ready, setReady] = useState(false);
   const [listsLoaded, setListsLoaded] = useState(false);
@@ -66,15 +68,12 @@ export function useLists(uid: string | undefined, joinCode: string | null) {
           joined = await joinWithCode(joinCode, uid);
           if (!cancelled) setJoinResult({ status: 'joined', listId: joined });
         } catch (e) {
-          const reason =
-            (e as Error).message === 'offline'
-              ? "You're offline. Open the invite link again when you're connected."
-              : 'This invite link is no longer valid. Ask for a new one.';
+          const reason = (e as Error).message === 'offline' ? 'offline' : 'invalid';
           if (!cancelled) setJoinResult({ status: 'failed', reason });
         }
       }
       // Someone joining a shared list doesn't need an empty list of their own.
-      const listId = joined ?? (await ensureDefaultList(uid));
+      const listId = joined ?? (await ensureDefaultList(uid, defaultListName));
       migrateLegacyItems(listId, uid);
       if (cancelled) return;
       if (joined) {
@@ -110,8 +109,10 @@ export function useLists(uid: string | undefined, joinCode: string | null) {
 
   // Never leave someone with no list at all (e.g. after deleting or leaving the last one).
   useEffect(() => {
-    if (uid && listsLoaded && lists.length === 0) ensureDefaultList(uid).catch(console.error);
-  }, [uid, listsLoaded, lists.length]);
+    if (uid && listsLoaded && lists.length === 0) {
+      ensureDefaultList(uid, defaultListName).catch(console.error);
+    }
+  }, [uid, listsLoaded, lists.length, defaultListName]);
 
   // Fall back to the first list if the remembered one is gone (deleted or left).
   const current = lists.find((l) => l.id === currentId) ?? lists[0] ?? null;

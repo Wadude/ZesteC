@@ -3,6 +3,8 @@ import { ItemRow } from './ItemRow';
 import { ItemSheet } from './ItemSheet';
 import { ListsSheet } from './ListsSheet';
 import { ShareSheet } from './ShareSheet';
+import { listName } from './i18n';
+import { useI18n } from './useI18n';
 import { useList } from './useList';
 import { formatRs, listTotal } from './units';
 import { useReorder } from './useReorder';
@@ -19,7 +21,9 @@ interface Props {
 }
 
 export function ListScreen({ list, lists, uid, onSelectList, onOpenSettings }: Props) {
+  const { t } = useI18n();
   const listId = list.id;
+  const name = listName(list.name, t);
   const [panel, setPanel] = useState<'lists' | 'share' | null>(null);
   const shared = list.memberIds.length > 1;
   const { loaded, items, toBuy, bought, add, save, toggle, remove, restore, move } = useList(
@@ -66,10 +70,10 @@ export function ListScreen({ list, lists, uid, onSelectList, onOpenSettings }: P
         <div className="header-text">
           <button
             className="title-button"
-            aria-label={`${list.name}. Switch list`}
+            aria-label={t.switchList(name)}
             onClick={() => setPanel('lists')}
           >
-            <h1>{list.name}</h1>
+            <h1>{name}</h1>
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M6 9l6 6 6-6" />
             </svg>
@@ -78,8 +82,8 @@ export function ListScreen({ list, lists, uid, onSelectList, onOpenSettings }: P
             {!loaded
               ? ' '
               : toBuy.length === 0
-                ? 'Nothing to buy'
-                : `${toBuy.length} to buy`}
+                ? t.nothingToBuy
+                : t.toBuy(toBuy.length)}
             {toBuyTotal != null && (
               <>
                 {' · '}
@@ -90,7 +94,7 @@ export function ListScreen({ list, lists, uid, onSelectList, onOpenSettings }: P
         </div>
         <button
           className={`icon-button${shared ? ' shared' : ''}`}
-          aria-label={shared ? `Shared with ${list.memberIds.length - 1} more. Share settings` : 'Share list'}
+          aria-label={shared ? t.sharedWith(list.memberIds.length - 1) : t.shareList}
           onClick={() => setPanel('share')}
         >
           <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -100,7 +104,7 @@ export function ListScreen({ list, lists, uid, onSelectList, onOpenSettings }: P
           </svg>
           {shared && <span className="share-count">{list.memberIds.length}</span>}
         </button>
-        <button className="icon-button" aria-label="Settings" onClick={onOpenSettings}>
+        <button className="icon-button" aria-label={t.settings} onClick={onOpenSettings}>
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="12" cy="12" r="3" />
             <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" />
@@ -110,11 +114,11 @@ export function ListScreen({ list, lists, uid, onSelectList, onOpenSettings }: P
 
       <main>
         {!loaded ? (
-          <p className="loading">Loading your list…</p>
+          <p className="loading">{t.loadingList}</p>
         ) : toBuy.length === 0 && bought.length === 0 ? (
           <div className="empty">
-            <p className="empty-title">Your list is empty</p>
-            <p>Add your first item below.</p>
+            <p className="empty-title">{t.emptyTitle}</p>
+            <p>{t.emptyHint}</p>
           </div>
         ) : (
           <ul ref={listRef} className={`list${reordering ? ' reordering' : ''}`}>
@@ -132,7 +136,7 @@ export function ListScreen({ list, lists, uid, onSelectList, onOpenSettings }: P
               <svg viewBox="0 0 24 24" aria-hidden="true" className={showBought ? 'open' : ''}>
                 <path d="M9 6l6 6-6 6" />
               </svg>
-              Bought ({bought.length}){boughtTotal != null && ` · ${formatRs(boughtTotal)}`}
+              {t.bought(bought.length)}{boughtTotal != null && ` · ${formatRs(boughtTotal)}`}
             </button>
             {showBought && <ul className="list">{bought.map((item, i) => renderRow(item, i, false))}</ul>}
           </section>
@@ -164,7 +168,7 @@ export function ListScreen({ list, lists, uid, onSelectList, onOpenSettings }: P
         {deleted && (
           <div className="toast" role="status">
             <span>
-              Deleted <strong>{deleted.name}</strong>
+              {t.deleted} <strong>{deleted.name}</strong>
             </span>
             <button
               onClick={() => {
@@ -172,7 +176,7 @@ export function ListScreen({ list, lists, uid, onSelectList, onOpenSettings }: P
                 setDeleted(null);
               }}
             >
-              Undo
+              {t.undo}
             </button>
           </div>
         )}
@@ -189,12 +193,12 @@ export function ListScreen({ list, lists, uid, onSelectList, onOpenSettings }: P
             ref={inputRef}
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder="Add an item, e.g. Rice 5kg…"
-            aria-label="New item"
+            placeholder={t.addPlaceholder}
+            aria-label={t.newItem}
             enterKeyHint="done"
           />
           <button type="submit" disabled={!text.trim()}>
-            Add
+            {t.add}
           </button>
         </form>
       </div>

@@ -42,20 +42,20 @@ async function createListDoc(listId: string, uid: string, name: string) {
   await Promise.race([created, new Promise((r) => setTimeout(r, 4000))]);
 }
 
-/** Returns the user's first list, creating "My list" if they have none. */
-export async function ensureDefaultList(uid: string): Promise<string> {
+/** Returns the user's first list, creating one (e.g. "My list") if they have none. */
+export async function ensureDefaultList(uid: string, name: string): Promise<string> {
   const mine = await getDocs(
     query(collection(db, 'lists'), where('memberIds', 'array-contains', uid), limit(1)),
   );
   if (!mine.empty) return mine.docs[0].id;
   // Using the uid as the id makes this safe to run twice.
-  await createListDoc(uid, uid, 'My list');
+  await createListDoc(uid, uid, name);
   return uid;
 }
 
 export async function createList(uid: string, name: string): Promise<string> {
   const ref = doc(collection(db, 'lists'));
-  await createListDoc(ref.id, uid, name.trim() || 'New list');
+  await createListDoc(ref.id, uid, name.trim());
   return ref.id;
 }
 

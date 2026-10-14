@@ -18,7 +18,10 @@ export type SignInResult = 'linked' | 'switched' | 'cancelled';
  * - If that Google account already uses Zeste (e.g. on another phone), we switch to it
  *   and copy this device's guest items into its list, so nothing is lost.
  */
-export async function signInWithGoogle(guestListId: string): Promise<SignInResult> {
+export async function signInWithGoogle(
+  guestListId: string,
+  defaultListName: string,
+): Promise<SignInResult> {
   const guest = auth.currentUser;
   if (!guest) throw new Error('Not signed in');
   const provider = new GoogleAuthProvider();
@@ -42,7 +45,7 @@ export async function signInWithGoogle(guestListId: string): Promise<SignInResul
 
     const { user } = await signInWithCredential(auth, credential);
     if (guestItems.length > 0) {
-      const target = await ensureDefaultList(user.uid);
+      const target = await ensureDefaultList(user.uid, defaultListName);
       copyItems(guestItems, target, user.uid).catch((err) =>
         console.error('Could not copy guest items', err),
       );

@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { createList, deleteList } from './lists';
 import { Sheet } from './Sheet';
 import type { List } from './types';
+import { listName } from './i18n';
+import { useI18n } from './useI18n';
 
 interface Props {
   lists: List[];
@@ -12,6 +14,7 @@ interface Props {
 }
 
 export function ListsSheet({ lists, currentId, uid, onSelect, onClose }: Props) {
+  const { t } = useI18n();
   const [newName, setNewName] = useState('');
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -20,30 +23,29 @@ export function ListsSheet({ lists, currentId, uid, onSelect, onClose }: Props) 
     e.preventDefault();
     if (!newName.trim()) return;
     setBusy(true);
-    const id = await createList(uid, newName);
+    const id = await createList(uid, newName.trim() || t.untitledList);
     setBusy(false);
     onSelect(id);
     onClose();
   };
 
   const remove = async (list: List) => {
-    const shared = list.memberIds.length > 1 ? ' It will also disappear for everyone you shared it with.' : '';
-    if (!confirm(`Delete "${list.name}" and everything on it?${shared}`)) return;
+    if (!confirm(t.confirmDeleteList(listName(list.name, t), list.memberIds.length > 1))) return;
     setBusy(true);
     setMessage(null);
     try {
       await deleteList(list);
     } catch (err) {
       console.error(err);
-      setMessage("Couldn't delete the list. You need to be online for this.");
+      setMessage(t.deleteListFailed);
     } finally {
       setBusy(false);
     }
   };
 
   return (
-    <Sheet label="Your lists" onClose={onClose}>
-      <h2 className="sheet-title">Your lists</h2>
+    <Sheet label={t.yourLists} onClose={onClose}>
+      <h2 className="sheet-title">{t.yourLists}</h2>
       <ul className="lists">
         {lists.map((l) => (
           <li key={l.id} className={l.id === currentId ? 'current' : ''}>
@@ -56,16 +58,16 @@ export function ListsSheet({ lists, currentId, uid, onSelect, onClose }: Props) 
                 onClose();
               }}
             >
-              <span className="list-name">{l.name}</span>
+              <span className="list-name">{listName(l.name, t)}</span>
               <span className="list-meta">
-                {l.memberIds.length > 1 ? `Shared · ${l.memberIds.length} people` : 'Just you'}
+                {l.memberIds.length > 1 ? t.sharedPeople(l.memberIds.length) : t.justYou}
               </span>
             </button>
             {l.ownerId === uid && lists.length > 1 && (
               <button
                 type="button"
                 className="delete"
-                aria-label={`Delete ${l.name}`}
+                aria-label={t.deleteList(listName(l.name, t))}
                 disabled={busy}
                 onClick={() => remove(l)}
               >
@@ -87,11 +89,11 @@ export function ListsSheet({ lists, currentId, uid, onSelect, onClose }: Props) 
         <input
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
-          placeholder="New list, e.g. Party"
-          aria-label="New list name"
+          placeholder={t.newListPlaceholder}
+          aria-label={t.newListName}
         />
         <button type="submit" disabled={!newName.trim() || busy}>
-          Create
+          {t.create}
         </button>
       </form>
     </Sheet>

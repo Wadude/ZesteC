@@ -28,9 +28,7 @@ export function useSession() {
           setProfile(toProfile(u));
         } else {
           setProfile(null);
-          signInAnonymously(auth).catch(() =>
-            setError('Could not connect. Check your internet connection and try again.'),
-          );
+          signInAnonymously(auth).catch(() => setError('connect'));
         }
       }),
     [],
