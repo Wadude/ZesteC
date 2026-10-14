@@ -41,6 +41,36 @@
   }
 }
 
+/* Accent colours (Settings → Appearance). Green is the default above. */
+:root[data-accent='lagoon'] {
+  --accent: #1d6fa5;
+}
+:root[data-accent='coral'] {
+  --accent: #c04a32;
+}
+:root[data-theme='dark'][data-accent='lagoon'] {
+  --accent: #5eb3ea;
+  --accent-text: #06202f;
+  --toast-action: #1d6fa5;
+}
+:root[data-theme='dark'][data-accent='coral'] {
+  --accent: #f28a6b;
+  --accent-text: #2b0e07;
+  --toast-action: #c04a32;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light'])[data-accent='lagoon'] {
+    --accent: #5eb3ea;
+    --accent-text: #06202f;
+    --toast-action: #1d6fa5;
+  }
+  :root:not([data-theme='light'])[data-accent='coral'] {
+    --accent: #f28a6b;
+    --accent-text: #2b0e07;
+    --toast-action: #c04a32;
+  }
+}
+
 * {
   box-sizing: border-box;
 }
@@ -931,4 +961,106 @@ svg {
   font-weight: 600;
   box-shadow: 0 6px 20px rgb(0 0 0 / 0.2);
   animation: fade-in 0.2s ease;
+}
+
+/* Colour swatches in Settings */
+.swatches {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+.swatch {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 4px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+}
+.swatch.active {
+  border-color: var(--text);
+  color: var(--text);
+}
+.swatch-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+}
+.swatch-dot svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 3;
+}
+.swatch-dot.green { background: #2f7d4f; }
+.swatch-dot.lagoon { background: #1d6fa5; }
+.swatch-dot.coral { background: #c04a32; }
+
+/* List tabs under the title */
+.list-tabs-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: -4px 0 12px;
+}
+.list-tabs {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  /* Fade the right edge so it's clear the row scrolls. */
+  mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent);
+  padding-right: 24px;
+}
+.list-tabs::-webkit-scrollbar {
+  display: none;
+}
+.list-tab {
+  flex: none;
+  max-width: 180px;
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.list-tab.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+.list-tab.new {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--accent);
+  border-style: dashed;
+  border-color: var(--accent);
+  background: transparent;
+}
+.list-tab.new svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2.6;
+}
+.list-tab.new.compact {
+  width: 36px;
+  padding: 0;
+  justify-content: center;
 }

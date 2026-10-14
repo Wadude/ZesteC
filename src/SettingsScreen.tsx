@@ -3,18 +3,29 @@ import { signInWithGoogle, signOut } from './account';
 import { LANGUAGES } from './i18n';
 import type { Profile } from './types';
 import { useI18n } from './useI18n';
-import type { ThemeMode } from './useTheme';
+import { ACCENTS, type Accent, type ThemeMode } from './useTheme';
 
 interface Props {
   profile: Profile;
   listId: string;
   theme: ThemeMode;
   onThemeChange: (mode: ThemeMode) => void;
+  accent: Accent;
+  onAccentChange: (accent: Accent) => void;
   onAccountChanged: () => void;
   onBack: () => void;
 }
 
-export function SettingsScreen({ profile, listId, theme, onThemeChange, onAccountChanged, onBack }: Props) {
+export function SettingsScreen({
+  profile,
+  listId,
+  theme,
+  onThemeChange,
+  accent,
+  onAccentChange,
+  onAccountChanged,
+  onBack,
+}: Props) {
   const { t, lang, setLang } = useI18n();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -23,6 +34,11 @@ export function SettingsScreen({ profile, listId, theme, onThemeChange, onAccoun
     { value: 'light', label: t.themeLight },
     { value: 'dark', label: t.themeDark },
   ];
+  const accentLabels: Record<Accent, string> = {
+    green: t.accentGreen,
+    lagoon: t.accentLagoon,
+    coral: t.accentCoral,
+  };
 
   const handleSignIn = async () => {
     setBusy(true);
@@ -116,6 +132,26 @@ export function SettingsScreen({ profile, listId, theme, onThemeChange, onAccoun
               onClick={() => onThemeChange(option.value)}
             >
               {option.label}
+            </button>
+          ))}
+        </div>
+        <div className="swatches" role="radiogroup" aria-label={t.colour}>
+          {ACCENTS.map((a) => (
+            <button
+              key={a}
+              role="radio"
+              aria-checked={accent === a}
+              className={`swatch${accent === a ? ' active' : ''}`}
+              onClick={() => onAccentChange(a)}
+            >
+              <span className={`swatch-dot ${a}`} aria-hidden="true">
+                {accent === a && (
+                  <svg viewBox="0 0 24 24">
+                    <path d="M5 12.5l4.5 4.5L19 7.5" />
+                  </svg>
+                )}
+              </span>
+              {accentLabels[a]}
             </button>
           ))}
         </div>

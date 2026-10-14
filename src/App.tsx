@@ -5,7 +5,7 @@ import { listName } from './i18n';
 import { useI18n } from './useI18n';
 import { useLists } from './useLists';
 import { useSession } from './useSession';
-import { useTheme } from './useTheme';
+import { useAccent, useTheme } from './useTheme';
 
 type Screen = 'list' | 'settings';
 
@@ -29,6 +29,7 @@ export default function App() {
     t.defaultListName,
   );
   const [theme, setTheme] = useTheme();
+  const [accent, setAccent] = useAccent();
   const [screen, setScreen] = useState<Screen>(screenFromHash);
   const openedInApp = useRef(false);
 
@@ -85,6 +86,8 @@ export default function App() {
         listId={current.id}
         theme={theme}
         onThemeChange={setTheme}
+        accent={accent}
+        onAccentChange={setAccent}
         onAccountChanged={refresh}
         onBack={goBack}
       />

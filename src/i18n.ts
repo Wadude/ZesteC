@@ -83,6 +83,10 @@ const en = {
   themeSystem: 'System',
   themeLight: 'Light',
   themeDark: 'Dark',
+  colour: 'Colour',
+  accentGreen: 'Green',
+  accentLagoon: 'Lagoon',
+  accentCoral: 'Coral',
   language: 'Language',
   version: (v: string) => `Zeste · version ${v}`,
 
@@ -122,6 +126,8 @@ const en = {
   newListPlaceholder: 'New list, e.g. Party',
   newListName: 'New list name',
   create: 'Create',
+  newList: 'New list',
+  listTabs: 'Your lists',
   defaultListName: 'My list',
   untitledList: 'New list',
 
@@ -203,6 +209,10 @@ const fr: Messages = {
   themeSystem: 'Système',
   themeLight: 'Clair',
   themeDark: 'Sombre',
+  colour: 'Couleur',
+  accentGreen: 'Vert',
+  accentLagoon: 'Lagon',
+  accentCoral: 'Corail',
   language: 'Langue',
   version: (v) => `Zeste · version ${v}`,
 
@@ -241,6 +251,8 @@ const fr: Messages = {
   newListPlaceholder: 'Nouvelle liste, ex. Fête',
   newListName: 'Nom de la nouvelle liste',
   create: 'Créer',
+  newList: 'Nouvelle liste',
+  listTabs: 'Vos listes',
   defaultListName: 'Ma liste',
   untitledList: 'Nouvelle liste',
 
@@ -319,6 +331,10 @@ const mfe: Messages = {
   themeSystem: 'Sistem',
   themeLight: 'Kler',
   themeDark: 'Nwar',
+  colour: 'Kouler',
+  accentGreen: 'Ver',
+  accentLagoon: 'Lagon',
+  accentCoral: 'Koray',
   language: 'Lang',
   version: (v) => `Zeste · versyon ${v}`,
 
@@ -356,6 +372,8 @@ const mfe: Messages = {
   newListPlaceholder: 'Nouvo lalis, egz. Lafet',
   newListName: 'Nom nouvo lalis',
   create: 'Kree',
+  newList: 'Nouvo lalis',
+  listTabs: 'Ou bann lalis',
   defaultListName: 'Mo lalis',
   untitledList: 'Nouvo lalis',
 

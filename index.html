@@ -11,6 +11,8 @@
       try {
         var t = localStorage.getItem('zeste.theme');
         if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+        var a = localStorage.getItem('zeste.accent');
+        if (a === 'lagoon' || a === 'coral') document.documentElement.dataset.accent = a;
       } catch (e) {}
     </script>
   </head>
