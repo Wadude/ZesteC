@@ -1,73 +1,112 @@
+/*
+ * Colour themes: Green (default), Lagoon or Coral, each with a light and a dark version.
+ * Chosen in Settings; "System" follows the phone's light/dark setting.
+ * Every combination is checked for readable contrast (4.5:1 or better).
+ */
+
+/* Green · light (default) */
 :root {
-  --bg: #f6f7f2;
+  --bg: #f1f6f0;
   --surface: #ffffff;
-  --text: #1d1f1c;
-  --muted: #6b6f68;
-  --line: #e4e6df;
+  --text: #18221a;
+  --muted: #5f6d61;
+  --line: #dce7da;
   --accent: #2f7d4f;
   --accent-text: #ffffff;
+  --toast-action: #5cbf85;
   --danger: #c0392b;
+  --warn: #b26a00;
   --shadow: 0 1px 2px rgb(0 0 0 / 0.06);
   color-scheme: light;
 }
+/* Lagoon · light */
+:root[data-accent='lagoon'] {
+  --bg: #eef5f9;
+  --text: #13212b;
+  --muted: #596a76;
+  --line: #d8e5ee;
+  --accent: #1d6fa5;
+  --toast-action: #5eb3ea;
+}
+/* Coral · light */
+:root[data-accent='coral'] {
+  --bg: #fbf2ee;
+  --text: #2a1915;
+  --muted: #76625b;
+  --line: #f0ddd5;
+  --accent: #b5432c;
+  --toast-action: #f28a6b;
+}
 
-/* Dark theme: follows the phone unless the user picked Light or Dark in Settings. */
+/* Dark versions: when Dark is picked, or System and the phone is in dark mode. */
 :root[data-theme='dark'] {
-  --bg: #121412;
-  --surface: #1c1f1c;
-  --text: #e8eae6;
-  --muted: #9aa09a;
-  --line: #2c302c;
+  --bg: #0e1510;
+  --surface: #17211a;
+  --text: #e4eee5;
+  --muted: #93a796;
+  --line: #25332a;
   --accent: #5cbf85;
   --accent-text: #0d1a12;
-  --danger: #e0645a;
   --toast-action: #2f7d4f;
+  --danger: #e0645a;
+  --warn: #e0a040;
   --shadow: none;
   color-scheme: dark;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    --bg: #121412;
-    --surface: #1c1f1c;
-    --text: #e8eae6;
-    --muted: #9aa09a;
-    --line: #2c302c;
-    --accent: #5cbf85;
-    --accent-text: #0d1a12;
-    --danger: #e0645a;
-    --toast-action: #2f7d4f;
-    --shadow: none;
-    color-scheme: dark;
-  }
-}
-
-/* Accent colours (Settings → Appearance). Green is the default above. */
-:root[data-accent='lagoon'] {
-  --accent: #1d6fa5;
-}
-:root[data-accent='coral'] {
-  --accent: #c04a32;
-}
 :root[data-theme='dark'][data-accent='lagoon'] {
+  --bg: #0b141b;
+  --surface: #14202a;
+  --text: #e2edf4;
+  --muted: #90a4b2;
+  --line: #22323f;
   --accent: #5eb3ea;
   --accent-text: #06202f;
   --toast-action: #1d6fa5;
 }
 :root[data-theme='dark'][data-accent='coral'] {
+  --bg: #1a110e;
+  --surface: #251915;
+  --text: #f4e7e2;
+  --muted: #b39b93;
+  --line: #3a2823;
   --accent: #f28a6b;
   --accent-text: #2b0e07;
-  --toast-action: #c04a32;
+  --toast-action: #b5432c;
 }
 @media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #0e1510;
+    --surface: #17211a;
+    --text: #e4eee5;
+    --muted: #93a796;
+    --line: #25332a;
+    --accent: #5cbf85;
+    --accent-text: #0d1a12;
+    --toast-action: #2f7d4f;
+    --danger: #e0645a;
+    --warn: #e0a040;
+    --shadow: none;
+    color-scheme: dark;
+  }
   :root:not([data-theme='light'])[data-accent='lagoon'] {
+    --bg: #0b141b;
+    --surface: #14202a;
+    --text: #e2edf4;
+    --muted: #90a4b2;
+    --line: #22323f;
     --accent: #5eb3ea;
     --accent-text: #06202f;
     --toast-action: #1d6fa5;
   }
   :root:not([data-theme='light'])[data-accent='coral'] {
+    --bg: #1a110e;
+    --surface: #251915;
+    --text: #f4e7e2;
+    --muted: #b39b93;
+    --line: #3a2823;
     --accent: #f28a6b;
     --accent-text: #2b0e07;
-    --toast-action: #c04a32;
+    --toast-action: #b5432c;
   }
 }
 
@@ -1002,7 +1041,19 @@ svg {
 }
 .swatch-dot.green { background: #2f7d4f; }
 .swatch-dot.lagoon { background: #1d6fa5; }
-.swatch-dot.coral { background: #c04a32; }
+.swatch-dot.coral { background: #b5432c; }
+/* Each swatch previews its theme's background tint. */
+.swatch.green { background: #f1f6f0; }
+.swatch.lagoon { background: #eef5f9; }
+.swatch.coral { background: #fbf2ee; }
+:root[data-theme='dark'] .swatch.green { background: #0e1510; }
+:root[data-theme='dark'] .swatch.lagoon { background: #0b141b; }
+:root[data-theme='dark'] .swatch.coral { background: #1a110e; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .swatch.green { background: #0e1510; }
+  :root:not([data-theme='light']) .swatch.lagoon { background: #0b141b; }
+  :root:not([data-theme='light']) .swatch.coral { background: #1a110e; }
+}
 
 /* List tabs under the title */
 .list-tabs-row {

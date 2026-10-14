@@ -30,6 +30,18 @@ export default function App() {
   );
   const [theme, setTheme] = useTheme();
   const [accent, setAccent] = useAccent();
+
+  // Colour the phone's status bar to match the theme.
+  useEffect(() => {
+    const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+    const dark = matchMedia('(prefers-color-scheme: dark)');
+    const sync = () => {
+      if (meta) meta.content = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
+    };
+    sync();
+    dark.addEventListener('change', sync);
+    return () => dark.removeEventListener('change', sync);
+  }, [theme, accent]);
   const [screen, setScreen] = useState<Screen>(screenFromHash);
   const openedInApp = useRef(false);
 

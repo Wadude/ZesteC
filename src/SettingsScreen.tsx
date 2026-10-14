@@ -141,7 +141,7 @@ export function SettingsScreen({
               key={a}
               role="radio"
               aria-checked={accent === a}
-              className={`swatch${accent === a ? ' active' : ''}`}
+              className={`swatch ${a}${accent === a ? ' active' : ''}`}
               onClick={() => onAccentChange(a)}
             >
               <span className={`swatch-dot ${a}`} aria-hidden="true">
