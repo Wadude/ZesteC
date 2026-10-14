@@ -1,5 +1,18 @@
 export type Unit = 'pcs' | 'pack' | 'g' | 'kg' | 'ml' | 'L';
 
+export type Category =
+  | 'produce'
+  | 'bakery'
+  | 'meat'
+  | 'dairy'
+  | 'frozen'
+  | 'pantry'
+  | 'snacks'
+  | 'drinks'
+  | 'household'
+  | 'personal'
+  | 'other';
+
 export interface Item {
   id: string;
   name: string;
@@ -11,6 +24,8 @@ export interface Item {
   price?: number;
   /** ...unless this is true: then the price is for the whole line. */
   priceIsTotal?: boolean;
+  /** Set automatically from the name when added; can be changed in the edit panel. */
+  category?: Category;
   createdAt: number;
   /** Position in the list. Older items without it fall back to createdAt. */
   order?: number;

@@ -9,7 +9,8 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import { db } from './firebase';
-import type { Item, Unit } from './types';
+import { guessCategory } from './categories';
+import type { Category, Item, Unit } from './types';
 import { parseItemText } from './units';
 
 export interface ItemChanges {
@@ -18,6 +19,7 @@ export interface ItemChanges {
   unit: Unit;
   price: number | null;
   priceIsTotal: boolean;
+  category: Category;
 }
 
 // Live view of one list's items. Changes from other devices arrive automatically.
@@ -66,6 +68,7 @@ export function useList(listId: string, uid: string) {
       createdAt: now,
       order: now,
       addedBy: uid,
+      category: guessCategory(name),
       ...(quantity != null && { quantity, unit }),
     }).catch(logError('add item'));
   };
@@ -80,6 +83,7 @@ export function useList(listId: string, uid: string) {
       quantity: changes.quantity ?? deleteField(),
       price: changes.price ?? deleteField(),
       priceIsTotal: changes.price != null && changes.priceIsTotal ? true : deleteField(),
+      category: changes.category,
     }).catch(logError('save item'));
   };
 

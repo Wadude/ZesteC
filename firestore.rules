@@ -27,7 +27,9 @@ service cloud.firestore {
         && d.get('unit', 'pcs') in ['pcs', 'pack', 'g', 'kg', 'ml', 'L']
         && d.get('price', 0) is number && d.get('price', 0) >= 0
         && d.get('price', 0) <= 10000000
-        && d.get('priceIsTotal', false) is bool;
+        && d.get('priceIsTotal', false) is bool
+        && d.get('category', 'other') in ['produce', 'bakery', 'meat', 'dairy', 'frozen', 'pantry',
+                                          'snacks', 'drinks', 'household', 'personal', 'other'];
     }
 
     // Name and photo, so members of a shared list can see who's who.

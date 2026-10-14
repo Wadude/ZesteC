@@ -178,7 +178,7 @@ svg {
 }
 .grip-spacer {
   flex: none;
-  width: 20px;
+  width: 6px;
 }
 .grip {
   flex: none;
@@ -1063,4 +1063,42 @@ svg {
   width: 36px;
   padding: 0;
   justify-content: center;
+}
+
+/* Categories */
+.list-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+.list-toolbar .segmented.compact button {
+  min-height: 32px;
+  font-size: 13px;
+}
+.group + .group {
+  margin-top: 16px;
+}
+.group-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 4px 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+.group-count {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 13px;
+}
+.category-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.category-chips .chip {
+  flex: none;
+  padding: 0 12px;
+  font-size: 14px;
 }

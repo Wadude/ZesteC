@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import type { Item, Unit } from './types';
+import { CATEGORIES, CATEGORY_EMOJI, categoryOf, guessCategory } from './categories';
+import type { Category, Item, Unit } from './types';
 import type { ItemChanges } from './useList';
 import {
   UNITS,
@@ -34,6 +35,17 @@ export function ItemSheet({ item, onSave, onDelete, onClose }: Props) {
   const [qty, setQty] = useState(show(item.quantity));
   const [price, setPrice] = useState(show(item.price));
   const [isTotal, setIsTotal] = useState(item.priceIsTotal ?? false);
+  const [category, setCategory] = useState<Category>(categoryOf(item));
+  const [categoryPicked, setCategoryPicked] = useState(false);
+
+  // Renaming re-guesses the category, unless one was picked by hand in this panel.
+  const changeName = (next: string) => {
+    setName(next);
+    if (!categoryPicked) {
+      const guess = guessCategory(next);
+      if (guess !== 'other') setCategory(guess);
+    }
+  };
 
   // Close with Escape.
   useEffect(() => {
@@ -72,6 +84,7 @@ export function ItemSheet({ item, onSave, onDelete, onClose }: Props) {
       quantity: quantity && quantity > 0 ? quantity : null,
       price: priceValue,
       priceIsTotal: isTotal,
+      category,
     });
     onClose();
   };
@@ -90,7 +103,7 @@ export function ItemSheet({ item, onSave, onDelete, onClose }: Props) {
 
         <label className="field">
           <span>{t.item}</span>
-          <input value={name} onChange={(e) => setName(e.target.value)} autoComplete="off" />
+          <input value={name} onChange={(e) => changeName(e.target.value)} autoComplete="off" />
         </label>
 
         <div className="field">
@@ -159,6 +172,27 @@ export function ItemSheet({ item, onSave, onDelete, onClose }: Props) {
                 {t.total}
               </button>
             </div>
+          </div>
+        </div>
+
+        <div className="field">
+          <span id="category-label">{t.category}</span>
+          <div className="category-chips" role="radiogroup" aria-labelledby="category-label">
+            {CATEGORIES.map((c) => (
+              <button
+                key={c}
+                type="button"
+                role="radio"
+                aria-checked={category === c}
+                className={category === c ? 'chip active' : 'chip'}
+                onClick={() => {
+                  setCategory(c);
+                  setCategoryPicked(true);
+                }}
+              >
+                <span aria-hidden="true">{CATEGORY_EMOJI[c]}</span> {t.categories[c]}
+              </button>
+            ))}
           </div>
         </div>
 

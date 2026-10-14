@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { CATEGORIES, CATEGORY_EMOJI, categoryOf } from './categories';
 import { ItemRow } from './ItemRow';
 import { ItemSheet } from './ItemSheet';
 import { ListsSheet } from './ListsSheet';
@@ -12,6 +13,17 @@ import { useReorder } from './useReorder';
 import type { Item, List } from './types';
 
 const UNDO_MS = 5000;
+const SORT_KEY = 'zeste.sort';
+
+type SortMode = 'category' | 'custom';
+
+function loadSort(): SortMode {
+  try {
+    return localStorage.getItem(SORT_KEY) === 'custom' ? 'custom' : 'category';
+  } catch {
+    return 'category';
+  }
+}
 
 interface Props {
   list: List;
@@ -38,6 +50,15 @@ export function ListScreen({ list, lists, uid, onSelectList, onOpenSettings }: P
   const { listRef, propsFor, reordering } = useReorder(toBuy.length, move);
   const [text, setText] = useState('');
   const [showBought, setShowBought] = useState(true);
+  const [sort, setSortState] = useState<SortMode>(loadSort);
+  const setSort = (mode: SortMode) => {
+    setSortState(mode);
+    try {
+      localStorage.setItem(SORT_KEY, mode);
+    } catch {
+      // Ignore: the choice just won't be remembered.
+    }
+  };
   const [deleted, setDeleted] = useState<Item | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -151,9 +172,45 @@ export function ListScreen({ list, lists, uid, onSelectList, onOpenSettings }: P
             <p>{t.emptyHint}</p>
           </div>
         ) : (
-          <ul ref={listRef} className={`list${reordering ? ' reordering' : ''}`}>
-            {toBuy.map((item, i) => renderRow(item, i, true))}
-          </ul>
+          <>
+            {toBuy.length > 1 && (
+              <div className="list-toolbar">
+                <div className="segmented compact" role="radiogroup" aria-label={t.sortLabel}>
+                  {(['category', 'custom'] as const).map((mode) => (
+                    <button
+                      key={mode}
+                      role="radio"
+                      aria-checked={sort === mode}
+                      className={sort === mode ? 'active' : ''}
+                      onClick={() => setSort(mode)}
+                    >
+                      {mode === 'category' ? t.sortByCategory : t.sortMyOrder}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            {sort === 'category' ? (
+              // Grouped by category, in supermarket order. Drag to reorder is in "My order".
+              CATEGORIES.map((c) => {
+                const group = toBuy.filter((i) => categoryOf(i) === c);
+                if (group.length === 0) return null;
+                return (
+                  <section key={c} className="group" aria-label={t.categories[c]}>
+                    <h2 className="group-title">
+                      <span aria-hidden="true">{CATEGORY_EMOJI[c]}</span> {t.categories[c]}
+                      <span className="group-count">{group.length}</span>
+                    </h2>
+                    <ul className="list">{group.map((item, i) => renderRow(item, i, false))}</ul>
+                  </section>
+                );
+              })
+            ) : (
+              <ul ref={listRef} className={`list${reordering ? ' reordering' : ''}`}>
+                {toBuy.map((item, i) => renderRow(item, i, true))}
+              </ul>
+            )}
+          </>
         )}
 
         {bought.length > 0 && (
