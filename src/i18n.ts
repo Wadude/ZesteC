@@ -196,6 +196,28 @@ const en = {
   deleteShop: 'Delete this shop',
   confirmDeleteShop: 'Delete this shop from the budget?',
   itemsBought: 'Items bought',
+
+  // Private testing
+  accessTitle: 'Zeste is in private testing',
+  accessText: 'Enter the tester code you were given to start.',
+  testerCode: 'Tester code',
+  accessButton: 'Start',
+  checkingAccess: 'Checking…',
+  accessInvalid: "That code doesn't work. Check it and try again.",
+  accessOffline: "You're offline. Connect to the internet to enter your code.",
+
+  // Feedback
+  feedbackTitle: 'Send feedback',
+  feedbackIntro: 'Found a problem or have an idea? Tell us. Every message is read.',
+  feedbackProblem: 'Problem',
+  feedbackIdea: 'Idea',
+  feedbackOther: 'Other',
+  feedbackPlaceholder: 'What happened, or what would make Zeste better?',
+  feedbackNote: 'Your app version, language and phone type are included to help us fix things.',
+  feedbackSend: 'Send',
+  feedbackThanks: 'Thank you! Your feedback was sent.',
+  testingTitle: 'Testing Zeste',
+  testingText: "Thanks for helping test Zeste. Tell us what works and what doesn't.",
 };
 
 export type Messages = typeof en;
@@ -382,6 +404,26 @@ const fr: Messages = {
   deleteShop: 'Supprimer cette course',
   confirmDeleteShop: 'Supprimer cette course du budget ?',
   itemsBought: 'Articles achetés',
+
+  accessTitle: 'Zeste est en test privé',
+  accessText: 'Saisissez le code testeur qui vous a été donné pour commencer.',
+  testerCode: 'Code testeur',
+  accessButton: 'Commencer',
+  checkingAccess: 'Vérification…',
+  accessInvalid: 'Ce code ne fonctionne pas. Vérifiez-le et réessayez.',
+  accessOffline: 'Vous êtes hors ligne. Connectez-vous à internet pour saisir votre code.',
+
+  feedbackTitle: 'Envoyer un avis',
+  feedbackIntro: 'Un problème ou une idée ? Dites-le-nous, chaque message est lu.',
+  feedbackProblem: 'Problème',
+  feedbackIdea: 'Idée',
+  feedbackOther: 'Autre',
+  feedbackPlaceholder: "Que s'est-il passé, ou qu'est-ce qui rendrait Zeste meilleur ?",
+  feedbackNote: "La version de l'app, la langue et le type de téléphone sont joints pour nous aider.",
+  feedbackSend: 'Envoyer',
+  feedbackThanks: 'Merci ! Votre avis a été envoyé.',
+  testingTitle: 'Tester Zeste',
+  testingText: 'Merci de nous aider à tester Zeste. Dites-nous ce qui marche et ce qui ne marche pas.',
 };
 
 // Kreol Morisien, following the standard spelling (Lortograf Linifye).
@@ -561,6 +603,26 @@ const mfe: Messages = {
   deleteShop: 'Efas sa komisyon-la',
   confirmDeleteShop: 'Efas sa komisyon-la dan bidze?',
   itemsBought: 'Zafer ki finn aste',
+
+  accessTitle: 'Zeste pe ankor teste an prive',
+  accessText: 'Rant kod testeur ki finn donn ou pou koumanse.',
+  testerCode: 'Kod testeur',
+  accessButton: 'Koumanse',
+  checkingAccess: 'Pe verifie…',
+  accessInvalid: 'Sa kod-la pa marse. Verifie li ek esey ankor.',
+  accessOffline: 'Ou pa konekte. Konekte lor internet pou rant ou kod.',
+
+  feedbackTitle: 'Avoy enn komanter',
+  feedbackIntro: 'Ou finn trouv enn problem ouswa ou ena enn lide? Dir nou. Nou lir tou mesaz.',
+  feedbackProblem: 'Problem',
+  feedbackIdea: 'Lide',
+  feedbackOther: 'Lot',
+  feedbackPlaceholder: 'Ki finn arive, ouswa ki pou fer Zeste vinn pli bon?',
+  feedbackNote: 'Nou ajout versyon aplikasion, lang ek tip telefonn pou ed nou koriz bann problem.',
+  feedbackSend: 'Avoy',
+  feedbackThanks: 'Mersi! Ou komanter finn ale.',
+  testingTitle: 'Pe teste Zeste',
+  testingText: 'Mersi pou ed nou teste Zeste. Dir nou seki marse ek seki pa marse.',
 };
 
 export const MESSAGES: Record<Lang, Messages> = { en, fr, mfe };

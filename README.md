@@ -47,3 +47,14 @@ Phones pick up the new version automatically the next time Zeste is opened.
 ## App icons
 
 Icons are drawn in `scripts/make-icons.mjs`. After changing it, run `node scripts/make-icons.mjs`.
+
+## Private testing
+
+Zeste is closed: new people must enter a tester code (or open a list invite link).
+This is enforced by `firestore.rules`, not just the screen.
+
+- **Tester codes** are in `firestore.rules` → `testerCodes()`. Add or change codes there, then
+  `npx firebase deploy --only firestore:rules`. Removing a code doesn't lock out people who already used it.
+- **Feedback** from the in-app 💬 button lands in Firestore → `feedback` (readable only in the
+  Firebase console).
+- **Opening up later:** remove the testers check from `allowed()` in the rules and the access screen.

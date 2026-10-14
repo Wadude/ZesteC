@@ -13,7 +13,7 @@ import { useI18n } from './useI18n';
 import { useList } from './useList';
 import { formatRs, listTotal } from './units';
 import { useReorder } from './useReorder';
-import type { Item, List } from './types';
+import type { Item, List, Profile } from './types';
 
 const UNDO_MS = 5000;
 const SORT_KEY = 'zeste.sort';
@@ -31,13 +31,23 @@ function loadSort(): SortMode {
 interface Props {
   list: List;
   lists: List[];
-  uid: string;
+  profile: Profile;
   onSelectList: (listId: string) => void;
   onOpenSettings: () => void;
   onOpenBudget: () => void;
+  onFeedback: () => void;
 }
 
-export function ListScreen({ list, lists, uid, onSelectList, onOpenSettings, onOpenBudget }: Props) {
+export function ListScreen({
+  list,
+  lists,
+  profile,
+  onSelectList,
+  onOpenSettings,
+  onOpenBudget,
+  onFeedback,
+}: Props) {
+  const uid = profile.uid;
   const { t } = useI18n();
   const listId = list.id;
   const name = listName(list.name, t);
@@ -141,6 +151,12 @@ export function ListScreen({ list, lists, uid, onSelectList, onOpenSettings, onO
             <path d="M16 11.5a2.6 2.6 0 1 0 0-5.2M17.5 14c1.8.5 3 2.1 3.3 4.5" />
           </svg>
           {shared && <span className="share-count">{list.memberIds.length}</span>}
+        </button>
+        <button className="icon-button" aria-label={t.feedbackTitle} onClick={onFeedback}>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 5h14a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H10l-4 3v-3H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z" />
+            <path d="M8.5 9.5h7M8.5 12.5h4.5" />
+          </svg>
         </button>
         <button className="icon-button" aria-label={t.settings} onClick={onOpenSettings}>
           <svg viewBox="0 0 24 24" aria-hidden="true">

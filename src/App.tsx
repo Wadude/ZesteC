@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
+import { useAccess } from './access';
+import { AccessScreen } from './AccessScreen';
 import { BudgetScreen } from './BudgetScreen';
+import { FeedbackSheet } from './FeedbackSheet';
 import { ListScreen } from './ListScreen';
 import { SettingsScreen } from './SettingsScreen';
 import { listName } from './i18n';
@@ -25,8 +28,10 @@ const initialJoinCode = takeJoinCode();
 export default function App() {
   const { t } = useI18n();
   const { profile, error, refresh } = useSession();
+  // Private testing: lists load only once this account has been let in.
+  const access = useAccess(profile?.uid, initialJoinCode);
   const { lists, current, ready, select, joinResult, clearJoinResult } = useLists(
-    profile?.uid,
+    access.state === 'ok' ? profile?.uid : undefined,
     initialJoinCode,
     t.defaultListName,
   );
@@ -46,6 +51,7 @@ export default function App() {
   }, [theme, accent]);
   const [screen, setScreen] = useState<Screen>(screenFromHash);
   const openedInApp = useRef(false);
+  const [feedbackFrom, setFeedbackFrom] = useState<string | null>(null);
 
   // Screens use the URL hash so the phone's Back button works.
   useEffect(() => {
@@ -84,6 +90,10 @@ export default function App() {
     );
   }
 
+  if (profile && access.state === 'needCode') {
+    return <AccessScreen onSubmit={access.submit} />;
+  }
+
   if (!profile || !ready || !current) {
     return (
       <div className="splash">
@@ -93,22 +103,30 @@ export default function App() {
     );
   }
 
+  const feedback = feedbackFrom && (
+    <FeedbackSheet profile={profile} screen={feedbackFrom} onClose={() => setFeedbackFrom(null)} />
+  );
+
   if (screen === 'budget') {
     return <BudgetScreen key={current.id} list={current} uid={profile.uid} onBack={goBack} />;
   }
 
   if (screen === 'settings') {
     return (
-      <SettingsScreen
-        profile={profile}
-        listId={current.id}
-        theme={theme}
-        onThemeChange={setTheme}
-        accent={accent}
-        onAccentChange={setAccent}
-        onAccountChanged={refresh}
-        onBack={goBack}
-      />
+      <>
+        <SettingsScreen
+          profile={profile}
+          listId={current.id}
+          theme={theme}
+          onThemeChange={setTheme}
+          accent={accent}
+          onAccentChange={setAccent}
+          onFeedback={() => setFeedbackFrom('settings')}
+          onAccountChanged={refresh}
+          onBack={goBack}
+        />
+        {feedback}
+      </>
     );
   }
 
@@ -118,11 +136,13 @@ export default function App() {
         key={current.id}
         list={current}
         lists={lists}
-        uid={profile.uid}
+        profile={profile}
         onSelectList={select}
         onOpenSettings={() => open('settings')}
         onOpenBudget={() => open('budget')}
+        onFeedback={() => setFeedbackFrom('list')}
       />
+      {feedback}
       {joinResult && (
         <div className="banner" role="status" onClick={clearJoinResult}>
           {joinResult.status === 'joined'

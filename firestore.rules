@@ -8,6 +8,17 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    // Private testing: valid tester codes. Change or add codes here, then deploy the rules.
+    function testerCodes() {
+      return ['ZESTE-JRDX'];
+    }
+
+    // Signed in AND let in to the private test.
+    function allowed() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/testers/$(request.auth.uid));
+    }
+
     function listData(listId) {
       return get(/databases/$(database)/documents/lists/$(listId)).data;
     }
@@ -41,32 +52,53 @@ service cloud.firestore {
         && (!('store' in d) || (d.store is string && d.store.size() <= 60));
     }
 
+    // Who's in the private test. Created with a tester code, or the code of a list invite
+    // (so people invited to a shared list get in too). Can't be changed afterwards.
+    match /testers/{uid} {
+      allow get: if signedIn() && request.auth.uid == uid;
+      allow create: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['code', 'joinedAt'])
+        && request.resource.data.code is string
+        && (request.resource.data.code in testerCodes()
+          || exists(/databases/$(database)/documents/invites/$(request.resource.data.code)));
+    }
+
+    // Testers' feedback: write-only from the app, read in the Firebase console.
+    match /feedback/{id} {
+      allow create: if allowed()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.message is string
+        && request.resource.data.message.size() > 0
+        && request.resource.data.message.size() <= 2000
+        && request.resource.data.kind in ['problem', 'idea', 'other'];
+    }
+
     // Name and photo, so members of a shared list can see who's who.
     match /users/{uid} {
-      allow read: if signedIn();
-      allow write: if signedIn() && request.auth.uid == uid
+      allow read: if allowed();
+      allow write: if allowed() && request.auth.uid == uid
         && request.resource.data.keys().hasOnly(['name', 'photoURL', 'updatedAt'])
         && request.resource.data.name is string && request.resource.data.name.size() <= 100;
     }
 
     // Invite codes. Readable one at a time by code (no listing), so they can't be browsed.
     match /invites/{code} {
-      allow get: if signedIn();
-      allow create: if signedIn()
+      allow get: if allowed();
+      allow create: if allowed()
         && request.resource.data.createdBy == request.auth.uid
         && isMember(request.resource.data.listId);
-      allow delete: if signedIn() && isMember(resource.data.listId);
+      allow delete: if allowed() && isMember(resource.data.listId);
     }
 
     match /lists/{listId} {
-      allow read: if signedIn() && request.auth.uid in resource.data.memberIds;
+      allow read: if allowed() && request.auth.uid in resource.data.memberIds;
 
       // A new list starts with only its creator as member.
-      allow create: if signedIn()
+      allow create: if allowed()
         && request.resource.data.ownerId == request.auth.uid
         && request.resource.data.memberIds == [request.auth.uid];
 
-      allow update: if signedIn()
+      allow update: if allowed()
         && request.resource.data.ownerId == resource.data.ownerId
         && (
           // Members can rename the list, set its invite code or budget, but not change who's in it.
@@ -91,19 +123,19 @@ service cloud.firestore {
             && get(/databases/$(database)/documents/invites/$(request.resource.data.joinCode)).data.listId == listId)
         );
 
-      allow delete: if signedIn() && resource.data.ownerId == request.auth.uid;
+      allow delete: if allowed() && resource.data.ownerId == request.auth.uid;
 
       match /items/{itemId} {
-        allow read, delete: if signedIn() && isMember(listId);
-        allow create, update: if signedIn() && isMember(listId) && validItem();
+        allow read, delete: if allowed() && isMember(listId);
+        allow create, update: if allowed() && isMember(listId) && validItem();
       }
 
       // Shops (trips) for the budget.
       match /trips/{tripId} {
-        allow read, delete: if signedIn() && isMember(listId);
-        allow create: if signedIn() && isMember(listId) && validTrip()
+        allow read, delete: if allowed() && isMember(listId);
+        allow create: if allowed() && isMember(listId) && validTrip()
           && request.resource.data.enteredBy == request.auth.uid;
-        allow update: if signedIn() && isMember(listId) && validTrip()
+        allow update: if allowed() && isMember(listId) && validTrip()
           && request.resource.data.enteredBy == resource.data.enteredBy;
       }
     }

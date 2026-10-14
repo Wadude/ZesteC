@@ -12,6 +12,7 @@ interface Props {
   onThemeChange: (mode: ThemeMode) => void;
   accent: Accent;
   onAccentChange: (accent: Accent) => void;
+  onFeedback: () => void;
   onAccountChanged: () => void;
   onBack: () => void;
 }
@@ -23,6 +24,7 @@ export function SettingsScreen({
   onThemeChange,
   accent,
   onAccentChange,
+  onFeedback,
   onAccountChanged,
   onBack,
 }: Props) {
@@ -77,6 +79,14 @@ export function SettingsScreen({
         </button>
         <h1>{t.settings}</h1>
       </header>
+
+      <section className="card testing-card">
+        <h2>{t.testingTitle}</h2>
+        <p className="muted">{t.testingText}</p>
+        <button className="secondary-button" onClick={onFeedback}>
+          💬 {t.feedbackTitle}
+        </button>
+      </section>
 
       <section className="card">
         <h2>{t.account}</h2>
