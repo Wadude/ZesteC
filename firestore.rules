@@ -1,0 +1,44 @@
+rules_version = '2';
+
+// Only members of a list can see or change it.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isMember(listId) {
+      return request.auth.uid in
+        get(/databases/$(database)/documents/lists/$(listId)).data.memberIds;
+    }
+
+    function validItem() {
+      let d = request.resource.data;
+      return d.name is string && d.name.size() > 0 && d.name.size() <= 200
+        && d.checked is bool
+        && d.createdAt is number;
+    }
+
+    match /lists/{listId} {
+      allow read: if signedIn() && request.auth.uid in resource.data.memberIds;
+
+      // A new list starts with only its creator as member.
+      allow create: if signedIn()
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.memberIds == [request.auth.uid];
+
+      // Members can edit; the owner can't be changed. (Joining is added with sharing.)
+      allow update: if signedIn()
+        && request.auth.uid in resource.data.memberIds
+        && request.resource.data.ownerId == resource.data.ownerId;
+
+      allow delete: if signedIn() && resource.data.ownerId == request.auth.uid;
+
+      match /items/{itemId} {
+        allow read, delete: if signedIn() && isMember(listId);
+        allow create, update: if signedIn() && isMember(listId) && validItem();
+      }
+    }
+  }
+}

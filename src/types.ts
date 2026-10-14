@@ -3,4 +3,5 @@ export interface Item {
   name: string;
   checked: boolean;
   createdAt: number;
+  addedBy?: string;
 }

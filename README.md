@@ -18,8 +18,16 @@ Then open http://localhost:5173.
 ## Status
 
 - [x] Step 2: single shopping list (add, tick, edit, delete with undo), saved in the browser
-- [ ] Step 3: Firebase: lists saved online
+- [x] Step 3: Firebase: lists saved online (guest account behind the scenes), offline cache, security rules
 - [ ] Step 4: guest mode + Google login
 - [ ] Step 5: sharing with invite codes and real-time sync
 - [ ] Step 6: budget tracker + dark mode setting
 - [ ] Step 7: installable app (PWA) and first testers
+
+## Firebase
+
+Project: `zestec-3af1d`. After changing `firestore.rules`, deploy them with:
+
+```bash
+npx firebase deploy --only firestore:rules
+```

@@ -223,6 +223,41 @@ svg {
   font-size: 18px;
 }
 
+/* Loading and error screens */
+.loading {
+  color: var(--muted);
+  text-align: center;
+  padding: 72px 16px;
+}
+.splash {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 16px;
+  text-align: center;
+  color: var(--muted);
+}
+.splash p {
+  margin: 0;
+}
+.splash-title {
+  color: var(--text);
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 4px !important;
+}
+.splash-button {
+  margin-top: 16px;
+  padding: 12px 20px;
+  border-radius: 12px;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-weight: 600;
+}
+
 /* Bottom: add bar + undo toast */
 .bottom {
   position: fixed;
