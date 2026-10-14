@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ItemRow } from './ItemRow';
 import { useList } from './useList';
+import { useReorder } from './useReorder';
 import type { Item } from './types';
 
 const UNDO_MS = 5000;
@@ -12,7 +13,11 @@ interface Props {
 }
 
 export function ListScreen({ listId, uid, onOpenSettings }: Props) {
-  const { loaded, toBuy, bought, add, toggle, rename, remove, restore } = useList(listId, uid);
+  const { loaded, toBuy, bought, add, toggle, rename, remove, restore, move } = useList(
+    listId,
+    uid,
+  );
+  const { listRef, propsFor, reordering } = useReorder(toBuy.length, move);
   const [text, setText] = useState('');
   const [showBought, setShowBought] = useState(true);
   const [deleted, setDeleted] = useState<Item | null>(null);
@@ -30,13 +35,15 @@ export function ListScreen({ listId, uid, onOpenSettings }: Props) {
     setDeleted(item);
   };
 
-  const renderRow = (item: Item) => (
+  // Only items still to buy can be reordered.
+  const renderRow = (item: Item, index: number, sortable: boolean) => (
     <ItemRow
       key={item.id}
       item={item}
       onToggle={() => toggle(item.id)}
       onRename={(name) => rename(item.id, name)}
       onDelete={() => handleDelete(item)}
+      reorder={sortable ? propsFor(item.id, index) : undefined}
     />
   );
 
@@ -66,7 +73,9 @@ export function ListScreen({ listId, uid, onOpenSettings }: Props) {
             <p>Add your first item below.</p>
           </div>
         ) : (
-          <ul className="list">{toBuy.map(renderRow)}</ul>
+          <ul ref={listRef} className={`list${reordering ? ' reordering' : ''}`}>
+            {toBuy.map((item, i) => renderRow(item, i, true))}
+          </ul>
         )}
 
         {bought.length > 0 && (
@@ -81,7 +90,7 @@ export function ListScreen({ listId, uid, onOpenSettings }: Props) {
               </svg>
               Bought ({bought.length})
             </button>
-            {showBought && <ul className="list">{bought.map(renderRow)}</ul>}
+            {showBought && <ul className="list">{bought.map((item, i) => renderRow(item, i, false))}</ul>}
           </section>
         )}
       </main>

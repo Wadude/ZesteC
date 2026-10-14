@@ -3,14 +3,26 @@ import type { Item } from './types';
 
 const SWIPE_DELETE_PX = 96;
 
+/** Props for the grip handle, supplied by the list when reordering is allowed. */
+export interface ReorderProps {
+  onPointerDown: (e: React.PointerEvent<HTMLElement>) => void;
+  onPointerMove: (e: React.PointerEvent<HTMLElement>) => void;
+  onPointerUp: (e: React.PointerEvent<HTMLElement>) => void;
+  onKeyDown: (e: React.KeyboardEvent<HTMLElement>) => void;
+  /** Vertical shift in px while a drag is in progress. */
+  offsetY: number;
+  dragging: boolean;
+}
+
 interface Props {
   item: Item;
   onToggle: () => void;
   onRename: (name: string) => void;
   onDelete: () => void;
+  reorder?: ReorderProps;
 }
 
-export function ItemRow({ item, onToggle, onRename, onDelete }: Props) {
+export function ItemRow({ item, onToggle, onRename, onDelete, reorder }: Props) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(item.name);
   const [dx, setDx] = useState(0);
@@ -54,7 +66,10 @@ export function ItemRow({ item, onToggle, onRename, onDelete }: Props) {
   };
 
   return (
-    <li className="row-wrap">
+    <li
+      className={`row-wrap${reorder?.dragging ? ' lifted' : ''}`}
+      style={reorder?.offsetY ? { transform: `translateY(${reorder.offsetY}px)` } : undefined}
+    >
       <div className="row-bg" aria-hidden="true">
         <span>Delete</span>
         <span>Delete</span>
@@ -67,6 +82,41 @@ export function ItemRow({ item, onToggle, onRename, onDelete }: Props) {
         onPointerUp={onPointerEnd}
         onPointerCancel={onPointerEnd}
       >
+        {!reorder && <span className="grip-spacer" aria-hidden="true" />}
+        {reorder && (
+          <button
+            className="grip"
+            aria-label={`Move ${item.name}. Use the up and down arrow keys.`}
+            onPointerDown={(e) => {
+              // Keep this from also starting a swipe on the row.
+              e.stopPropagation();
+              reorder.onPointerDown(e);
+            }}
+            onPointerMove={(e) => {
+              e.stopPropagation();
+              reorder.onPointerMove(e);
+            }}
+            onPointerUp={(e) => {
+              e.stopPropagation();
+              reorder.onPointerUp(e);
+            }}
+            onPointerCancel={(e) => {
+              e.stopPropagation();
+              reorder.onPointerUp(e);
+            }}
+            onKeyDown={reorder.onKeyDown}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="9" cy="6" r="1.3" />
+              <circle cx="15" cy="6" r="1.3" />
+              <circle cx="9" cy="12" r="1.3" />
+              <circle cx="15" cy="12" r="1.3" />
+              <circle cx="9" cy="18" r="1.3" />
+              <circle cx="15" cy="18" r="1.3" />
+            </svg>
+          </button>
+        )}
+
         <button
           className="check"
           role="checkbox"

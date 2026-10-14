@@ -40,9 +40,30 @@ export function useList(listId: string, uid: string) {
     const trimmed = name.trim();
     if (!trimmed) return;
     const ref = doc(collection(db, 'lists', listId, 'items'));
-    setDoc(ref, { name: trimmed, checked: false, createdAt: Date.now(), addedBy: uid }).catch(
+    const now = Date.now();
+    // New items go to the bottom: order uses the same scale as createdAt.
+    setDoc(ref, { name: trimmed, checked: false, createdAt: now, order: now, addedBy: uid }).catch(
       logError('add item'),
     );
+  };
+
+  /** Moves an item to a new position among the items still to buy. */
+  const move = (id: string, toIndex: number) => {
+    const others = toBuy.filter((i) => i.id !== id);
+    const before = others[toIndex - 1];
+    const after = others[toIndex];
+    // Place it halfway between its new neighbours, so only this one item changes.
+    const order =
+      before && after
+        ? (position(before) + position(after)) / 2
+        : before
+          ? position(before) + 1000
+          : after
+            ? position(after) - 1000
+            : Date.now();
+    // Update the screen straight away so the item doesn't jump back while saving.
+    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, order } : i)));
+    updateDoc(itemRef(id), { order }).catch(logError('move item'));
   };
 
   const toggle = (id: string) => {
@@ -64,9 +85,11 @@ export function useList(listId: string, uid: string) {
     setDoc(itemRef(id), data).catch(logError('restore item'));
   };
 
-  const byCreated = (a: Item, b: Item) => a.createdAt - b.createdAt;
-  const toBuy = items.filter((i) => !i.checked).sort(byCreated);
-  const bought = items.filter((i) => i.checked).sort(byCreated);
+  const byPosition = (a: Item, b: Item) => position(a) - position(b);
+  const toBuy = items.filter((i) => !i.checked).sort(byPosition);
+  const bought = items.filter((i) => i.checked).sort(byPosition);
 
-  return { loaded, toBuy, bought, add, toggle, rename, remove, restore };
+  return { loaded, toBuy, bought, add, toggle, rename, remove, restore, move };
 }
+
+const position = (i: Item) => i.order ?? i.createdAt;

@@ -3,6 +3,8 @@ export interface Item {
   name: string;
   checked: boolean;
   createdAt: number;
+  /** Position in the list. Older items without it fall back to createdAt. */
+  order?: number;
   addedBy?: string;
 }
 

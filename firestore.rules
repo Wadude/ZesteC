@@ -17,7 +17,8 @@ service cloud.firestore {
       let d = request.resource.data;
       return d.name is string && d.name.size() > 0 && d.name.size() <= 200
         && d.checked is bool
-        && d.createdAt is number;
+        && d.createdAt is number
+        && d.get('order', 0) is number;
     }
 
     match /lists/{listId} {
