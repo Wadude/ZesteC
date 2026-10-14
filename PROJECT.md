@@ -2,7 +2,7 @@
 
 > *One Zeste at a time.* (Mauritian Creole: one movement, one action at a time.)
 
-**Status:** Pre-MVP planning · **Last updated:** 2026-10-14
+**Status:** Pre-MVP live for testing at https://zestec-3af1d.web.app · **Last updated:** 2026-10-15
 **Working name:** TBD. Candidates: Zeste, CartNote, Listly, ShopKeep (earlier list: Savr, SmartCart, BudgetBite)
 
 This file is the single source of truth for the project. If a decision changes, update it here.
@@ -149,4 +149,5 @@ lists/{listId}/spending/{entryId}
 | 2026-10-14 | Pre-MVP = shared real-time list, manual budget, guest + Google, dark mode |
 | 2026-10-14 | Barcode scanning before photo recognition; manual budget before OCR |
 | 2026-10-14 | Stack: web app (PWA, React) + Firebase + GitHub; written with Claude's help. Native app deferred. |
-| *open* | App name |
+| 2026-10-15 | Working name **Zeste**; first version published at https://zestec-3af1d.web.app |
+| *open* | Final app name |

@@ -1,5 +1,7 @@
 # Zeste
 
+Live: https://zestec-3af1d.web.app
+
 *One Zeste at a time.* A shared grocery list and budget app for households, built as an installable web app.
 
 See [PROJECT.md](PROJECT.md) for the vision, scope, roadmap and decisions.
