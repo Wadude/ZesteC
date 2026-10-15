@@ -31,7 +31,7 @@ export function BudgetBar({ spent, budget }: { spent: number; budget: number }) 
 /** Small donut showing how much of the month's budget is used. */
 export function BudgetRing({ spent, budget, size = 44 }: { spent: number; budget: number; size?: number }) {
   const level = budgetLevel(spent, budget);
-  const r = 16;
+  const r = 17;
   const circumference = 2 * Math.PI * r;
   const used = Math.min(1, spent / budget);
   return (
