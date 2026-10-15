@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { finishShopping, summarise, useTrips } from './budget';
-import { BudgetBar } from './BudgetScreen';
+import { BudgetRing } from './BudgetScreen';
 import { CATEGORIES, CATEGORY_EMOJI, categoryOf } from './categories';
 import { ItemRow } from './ItemRow';
 import { ItemSheet } from './ItemSheet';
@@ -197,16 +197,28 @@ export function ListScreen({
 
       {/* This month's spending; tap for the budget screen. */}
       <button className="budget-summary" onClick={onOpenBudget} aria-label={t.openBudget}>
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M4 7a2 2 0 0 1 2-2h11v4M4 7v10a2 2 0 0 0 2 2h13V9H6a2 2 0 0 1-2-2zM16 14h.01" />
-        </svg>
+        {budget ? (
+          <BudgetRing spent={monthSpent} budget={budget} />
+        ) : (
+          <svg viewBox="0 0 24 24" aria-hidden="true" className="wallet">
+            <path d="M4 7a2 2 0 0 1 2-2h11v4M4 7v10a2 2 0 0 0 2 2h13V9H6a2 2 0 0 1-2-2zM16 14h.01" />
+          </svg>
+        )}
         <span className="budget-summary-text">
-          {budget
-            ? t.spentOf(formatMoney(monthSpent), formatMoney(budget))
-            : monthSpent > 0
-              ? t.spentThisMonth(formatMoney(monthSpent))
-              : t.tapToSetBudget}
-          {budget ? <BudgetBar spent={monthSpent} budget={budget} /> : null}
+          <span className="budget-summary-main">
+            {budget
+              ? t.spentOf(formatMoney(monthSpent), formatMoney(budget))
+              : monthSpent > 0
+                ? t.spentThisMonth(formatMoney(monthSpent))
+                : t.tapToSetBudget}
+          </span>
+          {budget ? (
+            <span className={`budget-summary-sub ${monthSpent > budget ? 'over' : ''}`}>
+              {monthSpent > budget
+                ? t.overBudget(formatMoney(monthSpent - budget))
+                : t.leftToSpend(formatMoney(budget - monthSpent))}
+            </span>
+          ) : null}
         </span>
         <svg viewBox="0 0 24 24" aria-hidden="true" className="chevron">
           <path d="M9 6l6 6-6 6" />
@@ -218,6 +230,17 @@ export function ListScreen({
           <p className="loading">{t.loadingList}</p>
         ) : toBuy.length === 0 && bought.length === 0 ? (
           <div className="empty">
+            <svg className="empty-art" viewBox="0 0 120 120" aria-hidden="true">
+              <circle cx="60" cy="64" r="40" className="lemon-rind" />
+              <circle cx="60" cy="64" r="33" className="lemon-pith" />
+              <circle cx="60" cy="64" r="28" className="lemon-flesh" />
+              <g className="lemon-segments">
+                {[0, 45, 90, 135, 180, 225, 270, 315].map((a) => (
+                  <line key={a} x1="60" y1="64" x2="60" y2="38" transform={`rotate(${a + 22.5} 60 64)`} />
+                ))}
+              </g>
+              <path d="M60 24c2-10 10-14 18-12-2 8-9 13-18 12z" className="lemon-leaf" />
+            </svg>
             <p className="empty-title">{t.emptyTitle}</p>
             <p>{t.emptyHint}</p>
           </div>
@@ -246,9 +269,10 @@ export function ListScreen({
                 const group = toBuy.filter((i) => categoryOf(i) === c);
                 if (group.length === 0) return null;
                 return (
-                  <section key={c} className="group" aria-label={t.categories[c]}>
+                  <section key={c} className="group" data-cat={c} aria-label={t.categories[c]}>
                     <h2 className="group-title">
-                      <span aria-hidden="true">{CATEGORY_EMOJI[c]}</span> {t.categories[c]}
+                      <span className="group-emoji" aria-hidden="true">{CATEGORY_EMOJI[c]}</span>
+                      {t.categories[c]}
                       <span className="group-count">{group.length}</span>
                     </h2>
                     <ul className="list">{group.map((item, i) => renderRow(item, i, false))}</ul>
@@ -363,8 +387,10 @@ export function ListScreen({
             aria-label={t.newItem}
             enterKeyHint="done"
           />
-          <button type="submit" disabled={!text.trim()}>
-            {t.add}
+          <button type="submit" disabled={!text.trim()} aria-label={t.add}>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
           </button>
         </form>
       </div>

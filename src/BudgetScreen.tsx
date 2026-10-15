@@ -28,6 +28,30 @@ export function BudgetBar({ spent, budget }: { spent: number; budget: number }) 
   );
 }
 
+/** Small donut showing how much of the month's budget is used. */
+export function BudgetRing({ spent, budget, size = 44 }: { spent: number; budget: number; size?: number }) {
+  const level = budgetLevel(spent, budget);
+  const r = 16;
+  const circumference = 2 * Math.PI * r;
+  const used = Math.min(1, spent / budget);
+  return (
+    <svg className={`ring ${level}`} viewBox="0 0 40 40" width={size} height={size} aria-hidden="true">
+      <circle className="ring-track" cx="20" cy="20" r={r} />
+      <circle
+        className="ring-value"
+        cx="20"
+        cy="20"
+        r={r}
+        strokeDasharray={`${used * circumference} ${circumference}`}
+        transform="rotate(-90 20 20)"
+      />
+      <text x="20" y="20" textAnchor="middle" dominantBaseline="central">
+        {Math.round((spent / budget) * 100)}%
+      </text>
+    </svg>
+  );
+}
+
 export function BudgetScreen({ list, uid, onBack }: Props) {
   const { t } = useI18n();
   const now = new Date();
