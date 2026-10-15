@@ -8,3 +8,4 @@ dist
 .firebase
 .claude/settings.local.json
 *.tsbuildinfo
+video/

@@ -107,6 +107,21 @@ const en = {
   language: 'Language',
   currency: 'Currency',
   currencyNote: 'Only the symbol changes. Amounts are not converted.',
+  privacy: 'Privacy',
+  privacyText: 'What Zeste stores, who can see it, and your rights.',
+  privacyPolicy: 'Privacy policy',
+  deleteAccount: 'Delete my account and data',
+  deleteAccountTitle: 'Delete your account?',
+  deleteAccountText:
+    'This permanently deletes your account, the lists only you use (with their items and shops), your feedback and your usage numbers.',
+  deleteAccountShared:
+    'Lists you share with others are handed to another member instead, so your household keeps them. Items you added there stay.',
+  deleteAccountGoogle: "You'll be asked to sign in with Google once more to confirm.",
+  deleteAccountWarning: "This can't be undone.",
+  deleteAccountConfirm: 'Delete everything',
+  deletingAccount: 'Deleting…',
+  deleteAccountFailed: "Couldn't delete everything. Check your internet connection and try again.",
+  accountDeleted: 'Your account and data have been deleted.',
   version: (v: string) => `Zeste · version ${v}`,
 
   // Share panel
@@ -317,6 +332,21 @@ const fr: Messages = {
   language: 'Langue',
   currency: 'Devise',
   currencyNote: "Seul le symbole change. Les montants ne sont pas convertis.",
+  privacy: 'Confidentialité',
+  privacyText: 'Ce que Zeste enregistre, qui peut le voir, et vos droits.',
+  privacyPolicy: 'Politique de confidentialité',
+  deleteAccount: 'Supprimer mon compte et mes données',
+  deleteAccountTitle: 'Supprimer votre compte ?',
+  deleteAccountText:
+    'Cela supprime définitivement votre compte, les listes que vous êtes seul à utiliser (avec leurs articles et courses), vos avis et vos statistiques d\'utilisation.',
+  deleteAccountShared:
+    'Les listes partagées avec d\'autres sont confiées à un autre membre, pour que votre foyer les garde. Les articles que vous y avez ajoutés restent.',
+  deleteAccountGoogle: 'Il vous sera demandé de vous reconnecter avec Google pour confirmer.',
+  deleteAccountWarning: 'Cette action est irréversible.',
+  deleteAccountConfirm: 'Tout supprimer',
+  deletingAccount: 'Suppression…',
+  deleteAccountFailed: "Impossible de tout supprimer. Vérifiez votre connexion internet et réessayez.",
+  accountDeleted: 'Votre compte et vos données ont été supprimés.',
   version: (v) => `Zeste · version ${v}`,
 
   shareTitle: (name) => `Partager ${name}`,
@@ -523,6 +553,21 @@ const mfe: Messages = {
   language: 'Lang',
   currency: 'Lamonnen',
   currencyNote: 'Zis senbol-la sanze. Bann montan pa konverti.',
+  privacy: 'Lavi prive',
+  privacyText: 'Ki Zeste gard, kisannla kapav trouv li, ek ou bann drwa.',
+  privacyPolicy: 'Politik lavi prive',
+  deleteAccount: 'Efas mo kont ek mo bann done',
+  deleteAccountTitle: 'Efas ou kont?',
+  deleteAccountText:
+    'Sa efase pou touzour ou kont, bann lalis ki zis ou servi (avek zot zafer ek komisyon), ou bann komanter ek ou bann sifr itilizasion.',
+  deleteAccountShared:
+    'Bann lalis ki ou partaze avek lezot pou donn enn lot manm, pou ou fami gard zot. Bann zafer ki ou finn ajoute ladan res la.',
+  deleteAccountGoogle: 'Pou bizin konekte avek Google enn kout ankor pou konfirme.',
+  deleteAccountWarning: 'Pa kapav defer sa.',
+  deleteAccountConfirm: 'Efas tou',
+  deletingAccount: 'Pe efase…',
+  deleteAccountFailed: 'Pa finn kapav efas tou. Get ou koneksion internet ek esey ankor.',
+  accountDeleted: 'Ou kont ek ou bann done finn efase.',
   version: (v) => `Zeste · versyon ${v}`,
 
   shareTitle: (name) => `Partaz ${name}`,

@@ -1477,3 +1477,76 @@ svg {
   display: block;
   margin: 10px 0 0;
 }
+
+/* Privacy and account deletion */
+a.secondary-button {
+  text-decoration: none;
+  color: var(--text);
+}
+.delete-account {
+  display: block;
+  margin: 14px auto 0;
+  font-size: 14px;
+}
+.delete-text {
+  margin: 0;
+  line-height: 1.45;
+}
+.delete-warning {
+  margin: 0;
+  font-weight: 700;
+  color: var(--danger);
+}
+.danger-button {
+  min-height: 48px;
+  padding: 0 20px;
+  border-radius: 12px;
+  background: var(--danger);
+  color: #fff;
+  font-weight: 600;
+}
+.danger-button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.stats-link {
+  margin-bottom: 16px;
+}
+.access-privacy {
+  margin-top: 18px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+/* Stats screen (owner only) */
+.stats-4 {
+  grid-template-columns: repeat(2, 1fr);
+}
+.daily-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 120px;
+  margin-top: 8px;
+}
+.daily-bar {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+.daily-bar span {
+  display: block;
+  width: 100%;
+  min-height: 2px;
+  border-radius: 3px 3px 0 0;
+  background: var(--accent);
+}
+.chart-axis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px !important;
+}
+.stats-list li {
+  grid-template-columns: minmax(0, 1fr) auto;
+}

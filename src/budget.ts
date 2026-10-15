@@ -15,6 +15,7 @@ import {
 import { db } from './firebase';
 import type { Item, Trip, TripItem } from './types';
 import { lineTotal } from './units';
+import { track } from './usage';
 
 // A "shop" (trip) is one visit to the shops: its total, store and the items bought.
 // Writes are not awaited, so they work offline and sync later.
@@ -65,6 +66,7 @@ export function finishShopping(listId: string, uid: string, bought: Item[], inpu
   for (const i of bought) batch.delete(doc(db, 'lists', listId, 'items', i.id));
   batch.commit().catch(logError('save shop'));
   rememberStore(store);
+  track('shops');
 }
 
 /** A shop added by hand, without items. */
@@ -80,6 +82,7 @@ export function addTrip(listId: string, uid: string, input: TripInput) {
     createdAt: Date.now(),
   }).catch(logError('add shop'));
   rememberStore(store);
+  track('shops');
 }
 
 export function updateTrip(listId: string, tripId: string, input: TripInput) {

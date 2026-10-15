@@ -5,16 +5,24 @@ import { BudgetScreen } from './BudgetScreen';
 import { FeedbackSheet } from './FeedbackSheet';
 import { ListScreen } from './ListScreen';
 import { SettingsScreen } from './SettingsScreen';
+import { StatsScreen } from './StatsScreen';
 import { listName } from './i18n';
 import { useI18n } from './useI18n';
 import { useLists } from './useLists';
 import { useSession } from './useSession';
 import { useAccent, useTheme } from './useTheme';
+import { startUsage } from './usage';
 
-type Screen = 'list' | 'settings' | 'budget';
+type Screen = 'list' | 'settings' | 'budget' | 'stats';
 
 const screenFromHash = (): Screen =>
-  location.hash === '#settings' ? 'settings' : location.hash === '#budget' ? 'budget' : 'list';
+  location.hash === '#settings'
+    ? 'settings'
+    : location.hash === '#budget'
+      ? 'budget'
+      : location.hash === '#stats'
+        ? 'stats'
+        : 'list';
 
 /** Invite links look like /join/ABCD2345. Read the code once, then tidy the address bar. */
 function takeJoinCode(): string | null {
@@ -26,7 +34,7 @@ function takeJoinCode(): string | null {
 const initialJoinCode = takeJoinCode();
 
 export default function App() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { profile, error, refresh } = useSession();
   // Private testing: lists load only once this account has been let in.
   const access = useAccess(profile?.uid, initialJoinCode);
@@ -37,6 +45,12 @@ export default function App() {
   );
   const [theme, setTheme] = useTheme();
   const [accent, setAccent] = useAccent();
+
+  // Usage numbers start once this person has been let in to the test.
+  const uid = profile?.uid;
+  useEffect(() => {
+    if (uid && access.state === 'ok') startUsage(uid, lang);
+  }, [uid, access.state, lang]);
 
   // Colour the phone's status bar to match the theme.
   useEffect(() => {
@@ -107,6 +121,10 @@ export default function App() {
     <FeedbackSheet profile={profile} screen={feedbackFrom} onClose={() => setFeedbackFrom(null)} />
   );
 
+  if (screen === 'stats') {
+    return <StatsScreen onBack={goBack} />;
+  }
+
   if (screen === 'budget') {
     return <BudgetScreen key={current.id} list={current} uid={profile.uid} onBack={goBack} />;
   }
@@ -122,6 +140,7 @@ export default function App() {
           accent={accent}
           onAccentChange={setAccent}
           onFeedback={() => setFeedbackFrom('settings')}
+          onOpenStats={() => open('stats')}
           onAccountChanged={refresh}
           onBack={goBack}
         />

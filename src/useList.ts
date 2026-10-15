@@ -12,6 +12,7 @@ import { db } from './firebase';
 import { guessCategory } from './categories';
 import type { Category, Item, Unit } from './types';
 import { parseItemText } from './units';
+import { track } from './usage';
 
 export interface ItemChanges {
   name: string;
@@ -71,6 +72,7 @@ export function useList(listId: string, uid: string) {
       category: guessCategory(name),
       ...(quantity != null && { quantity, unit }),
     }).catch(logError('add item'));
+    track('itemsAdded');
   };
 
   /** Saves the edit panel. Blank quantity or price removes it. */

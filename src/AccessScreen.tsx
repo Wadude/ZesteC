@@ -8,7 +8,7 @@ interface Props {
 
 /** Shown during private testing to people who don't have access yet. */
 export function AccessScreen({ onSubmit }: Props) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -50,6 +50,9 @@ export function AccessScreen({ onSubmit }: Props) {
           {error}
         </p>
       )}
+      <a className="access-privacy" href={`/privacy/?lang=${lang}`} target="_blank" rel="noopener">
+        {t.privacyPolicy}
+      </a>
     </div>
   );
 }

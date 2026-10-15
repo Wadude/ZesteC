@@ -2,6 +2,10 @@ import { useState } from 'react';
 import { signInWithGoogle, signOut } from './account';
 import { LANGUAGES } from './i18n';
 import { CURRENCIES } from './units';
+import { DeleteAccountSheet } from './DeleteAccountSheet';
+
+/** Only the app owner sees the usage numbers link (the database rules enforce it too). */
+const ADMIN_EMAIL = 'warren.pougnet@gmail.com';
 import type { Profile } from './types';
 import { useI18n } from './useI18n';
 import { ACCENTS, type Accent, type ThemeMode } from './useTheme';
@@ -14,6 +18,7 @@ interface Props {
   accent: Accent;
   onAccentChange: (accent: Accent) => void;
   onFeedback: () => void;
+  onOpenStats: () => void;
   onAccountChanged: () => void;
   onBack: () => void;
 }
@@ -26,11 +31,13 @@ export function SettingsScreen({
   accent,
   onAccentChange,
   onFeedback,
+  onOpenStats,
   onAccountChanged,
   onBack,
 }: Props) {
   const { t, lang, setLang, currency, setCurrency } = useI18n();
   const [busy, setBusy] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const themes: { value: ThemeMode; label: string }[] = [
     { value: 'system', label: t.themeSystem },
@@ -202,6 +209,25 @@ export function SettingsScreen({
         </select>
         <p className="hint currency-note">{t.currencyNote}</p>
       </section>
+
+      <section className="card">
+        <h2>{t.privacy}</h2>
+        <p className="muted">{t.privacyText}</p>
+        <a className="secondary-button" href={`/privacy/?lang=${lang}`} target="_blank" rel="noopener">
+          {t.privacyPolicy}
+        </a>
+        <button className="text-danger delete-account" onClick={() => setDeleting(true)}>
+          {t.deleteAccount}
+        </button>
+      </section>
+
+      {profile.email === ADMIN_EMAIL && (
+        <button className="secondary-button stats-link" onClick={onOpenStats}>
+          📊 Usage numbers (only you see this)
+        </button>
+      )}
+
+      {deleting && <DeleteAccountSheet isGuest={profile.isGuest} onClose={() => setDeleting(false)} />}
 
       <p className="version">{t.version(__APP_VERSION__)}</p>
     </div>

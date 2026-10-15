@@ -13,6 +13,13 @@ service cloud.firestore {
       return ['ZESTE-JRDX'];
     }
 
+    // The app owner, who can read the usage numbers on the stats screen.
+    function isAdmin() {
+      return signedIn()
+        && request.auth.token.email == 'warren.pougnet@gmail.com'
+        && request.auth.token.email_verified == true;
+    }
+
     // Signed in AND let in to the private test.
     function allowed() {
       return signedIn()
@@ -56,6 +63,8 @@ service cloud.firestore {
     // (so people invited to a shared list get in too). Can't be changed afterwards.
     match /testers/{uid} {
       allow get: if signedIn() && request.auth.uid == uid;
+      allow list: if isAdmin();
+      allow delete: if signedIn() && request.auth.uid == uid;
       allow create: if signedIn() && request.auth.uid == uid
         && request.resource.data.keys().hasOnly(['code', 'joinedAt'])
         && request.resource.data.code is string
@@ -65,6 +74,9 @@ service cloud.firestore {
 
     // Testers' feedback: write-only from the app, read in the Firebase console.
     match /feedback/{id} {
+      // People can find and delete their own feedback (account deletion); the owner reads it all.
+      allow read: if isAdmin() || (signedIn() && resource.data.uid == request.auth.uid);
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
       allow create: if allowed()
         && request.resource.data.uid == request.auth.uid
         && request.resource.data.message is string
@@ -76,9 +88,22 @@ service cloud.firestore {
     // Name and photo, so members of a shared list can see who's who.
     match /users/{uid} {
       allow read: if allowed();
-      allow write: if allowed() && request.auth.uid == uid
+      allow delete: if signedIn() && request.auth.uid == uid;
+      allow create, update: if allowed() && request.auth.uid == uid
         && request.resource.data.keys().hasOnly(['name', 'photoURL', 'updatedAt'])
         && request.resource.data.name is string && request.resource.data.name.size() <= 100;
+    }
+
+    // Usage numbers: one document per person per day with simple counts (no content).
+    // Written only by that person; read only by the app owner (and the person, to delete it).
+    match /usage/{docId} {
+      allow read: if isAdmin() || (signedIn() && resource.data.uid == request.auth.uid);
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+      allow create, update: if allowed()
+        && docId.matches(request.auth.uid + '_[0-9-]+')
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.keys().hasOnly(
+          ['uid', 'day', 'opens', 'itemsAdded', 'shops', 'invitesSent', 'joined', 'lang', 'appVersion']);
     }
 
     // Invite codes. Readable one at a time by code (no listing), so they can't be browsed.
@@ -91,7 +116,7 @@ service cloud.firestore {
     }
 
     match /lists/{listId} {
-      allow read: if allowed() && request.auth.uid in resource.data.memberIds;
+      allow read: if (allowed() && request.auth.uid in resource.data.memberIds) || isAdmin();
 
       // A new list starts with only its creator as member.
       allow create: if allowed()
@@ -99,18 +124,25 @@ service cloud.firestore {
         && request.resource.data.memberIds == [request.auth.uid];
 
       allow update: if allowed()
-        && request.resource.data.ownerId == resource.data.ownerId
         && (
           // Members can rename the list, set its invite code or budget, but not change who's in it.
           (request.auth.uid in resource.data.memberIds
+            && request.resource.data.ownerId == resource.data.ownerId
             && request.resource.data.memberIds == resource.data.memberIds
             && request.resource.data.get('monthlyBudget', 0) is number
             && request.resource.data.get('monthlyBudget', 0) >= 0
             && request.resource.data.get('monthlyBudget', 0) <= 100000000)
           // The owner can remove people (but must stay in the list).
           || (request.auth.uid == resource.data.ownerId
+            && request.resource.data.ownerId == resource.data.ownerId
             && request.auth.uid in request.resource.data.memberIds
             && resource.data.memberIds.hasAll(request.resource.data.memberIds))
+          // The owner can hand the list to another member and leave (used when deleting an account).
+          || (request.auth.uid == resource.data.ownerId
+            && request.resource.data.ownerId != request.auth.uid
+            && request.resource.data.ownerId in resource.data.memberIds
+            && request.resource.data.memberIds == resource.data.memberIds.removeAll([request.auth.uid])
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['ownerId', 'memberIds']))
           // Anyone else can leave.
           || (request.auth.uid in resource.data.memberIds
             && request.auth.uid != resource.data.ownerId
@@ -118,6 +150,7 @@ service cloud.firestore {
             && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds']))
           // Joining: add only yourself, with a valid invite code for this list.
           || (!(request.auth.uid in resource.data.memberIds)
+            && request.resource.data.ownerId == resource.data.ownerId
             && request.resource.data.memberIds == resource.data.memberIds.concat([request.auth.uid])
             && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds', 'joinCode'])
             && get(/databases/$(database)/documents/invites/$(request.resource.data.joinCode)).data.listId == listId)

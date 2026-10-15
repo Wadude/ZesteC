@@ -3,6 +3,7 @@ import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from './firebase';
 import { copyItems, ensureDefaultList, joinWithCode } from './lists';
 import type { Item, List } from './types';
+import { track } from './usage';
 
 // Items saved by the first, browser-only version of the app.
 const LEGACY_KEY = 'zeste.items.v1';
@@ -67,6 +68,7 @@ export function useLists(uid: string | undefined, joinCode: string | null, defau
         try {
           joined = await joinWithCode(joinCode, uid);
           if (!cancelled) setJoinResult({ status: 'joined', listId: joined });
+          track('joined');
         } catch (e) {
           const reason = (e as Error).message === 'offline' ? 'offline' : 'invalid';
           if (!cancelled) setJoinResult({ status: 'failed', reason });

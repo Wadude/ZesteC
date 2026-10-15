@@ -6,6 +6,7 @@ import { Sheet } from './Sheet';
 import type { List } from './types';
 import { listName } from './i18n';
 import { useI18n } from './useI18n';
+import { track } from './usage';
 
 interface Props {
   list: List;
@@ -66,6 +67,7 @@ export function ShareSheet({ list, uid, onClose }: Props) {
   const share = () =>
     run(async () => {
       const url = inviteUrl(await getOrCreateInvite(list, uid));
+      track('invitesSent');
       const text = t.inviteText(displayName);
       if (navigator.share) {
         try {

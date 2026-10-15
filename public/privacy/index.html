@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f1f6f0" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>Zeste · Privacy</title>
+    <style>
+      :root {
+        --bg: #f1f6f0;
+        --surface: #ffffff;
+        --text: #18221a;
+        --muted: #5f6d61;
+        --line: #dce7da;
+        --accent: #2f7d4f;
+        --accent-text: #ffffff;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0e1510;
+          --surface: #17211a;
+          --text: #e4eee5;
+          --muted: #93a796;
+          --line: #25332a;
+          --accent: #5cbf85;
+          --accent-text: #0d1a12;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        line-height: 1.55;
+      }
+      main {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 24px 16px 48px;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      header img {
+        width: 44px;
+        height: 44px;
+        border-radius: 11px;
+      }
+      header h1 {
+        flex: 1;
+        margin: 0;
+        font-size: 26px;
+        min-width: 180px;
+      }
+      .langs {
+        display: flex;
+        gap: 2px;
+        padding: 3px;
+        border-radius: 10px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+      }
+      .langs button {
+        font: inherit;
+        padding: 6px 10px;
+        border: none;
+        border-radius: 8px;
+        background: none;
+        color: var(--muted);
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .langs button[aria-pressed='true'] {
+        background: var(--accent);
+        color: var(--accent-text);
+      }
+      .updated {
+        color: var(--muted);
+        font-size: 14px;
+        margin: 8px 0 24px;
+      }
+      section {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 18px 20px;
+        margin-bottom: 14px;
+      }
+      h2 {
+        margin: 0 0 8px;
+        font-size: 18px;
+      }
+      p,
+      li {
+        margin: 6px 0;
+      }
+      ul {
+        padding-left: 20px;
+        margin: 6px 0;
+      }
+      a {
+        color: var(--accent);
+      }
+      .summary {
+        background: var(--accent);
+        color: var(--accent-text);
+        border: none;
+      }
+      .summary a {
+        color: inherit;
+      }
+      [lang]:not(html) {
+        display: none;
+      }
+      html[lang='en'] [lang='en'],
+      html[lang='fr'] [lang='fr'],
+      html[lang='mfe'] [lang='mfe'] {
+        display: revert;
+      }
+      .langs button[lang] {
+        display: inline-block;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <img src="/icons/icon-192.png" alt="" />
+        <h1>
+          <span lang="en">Privacy policy</span><span lang="fr">Politique de confidentialité</span><span lang="mfe">Politik lavi prive</span>
+        </h1>
+        <div class="langs" role="group" aria-label="Language">
+          <button data-lang="en" lang="en">EN</button>
+          <button data-lang="fr" lang="fr">FR</button>
+          <button data-lang="mfe" lang="mfe">Kreol</button>
+        </div>
+      </header>
+      <p class="updated">
+        <span lang="en">Last updated: 15 October 2026</span><span lang="fr">Dernière mise à jour : 15 octobre 2026</span><span lang="mfe">Dernie mizazour: 15 Oktob 2026</span>
+      </p>
+
+      <!-- ENGLISH -->
+      <div lang="en">
+        <section class="summary">
+          <h2>In short</h2>
+          <ul>
+            <li>Zeste stores only what it needs to run your lists and budget.</li>
+            <li>No ads, no selling of data, no third-party trackers.</li>
+            <li>The people you share a list with see that list and your name.</li>
+            <li>You can delete your account and data at any time in Settings.</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Who we are</h2>
+          <p>Zeste is an independent grocery list and budget app made in Mauritius, currently in a private test. In this policy, "we" means the Zeste team.</p>
+        </section>
+        <section>
+          <h2>What we store</h2>
+          <ul>
+            <li><strong>Your account:</strong> a random ID when you use Zeste as a guest. If you sign in with Google: your name, email address and profile photo.</li>
+            <li><strong>Your lists:</strong> list names, items, quantities, prices, categories, budgets, and the shops you save (amount, store, date, items).</li>
+            <li><strong>Sharing:</strong> who is a member of each list, and invite codes.</li>
+            <li><strong>Feedback you send:</strong> your message, plus the app version, language, screen and type of phone/browser.</li>
+            <li><strong>Usage numbers:</strong> daily counts such as how many times you opened Zeste, items added, shops saved and invites sent. These never include what is on your lists.</li>
+            <li><strong>On your phone only:</strong> your language, theme, colour and currency choices.</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Why we use it</h2>
+          <ul>
+            <li>To run the app: save your lists, keep them in sync between your phones and the people you share with, and work offline.</li>
+            <li>To show members of a shared list who is on it (name and photo).</li>
+            <li>To improve Zeste during the test, using your feedback and the usage numbers.</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Who can see it</h2>
+          <ul>
+            <li><strong>People you share a list with</strong> can see that list and your name and photo.</li>
+            <li><strong>The Zeste team</strong> can see feedback and overall usage numbers, and can access data if needed to fix a problem.</li>
+            <li><strong>Google Firebase</strong> stores the data and handles sign-in for us, on servers in Johannesburg, South Africa. Google acts on our behalf and may not use your data for its own purposes.</li>
+            <li>We never sell your data or use it for advertising.</li>
+          </ul>
+        </section>
+        <section>
+          <h2>How long we keep it</h2>
+          <p>Until you delete it. Deleting an item, shop or list removes it. Deleting your account removes your account and data as described below.</p>
+        </section>
+        <section>
+          <h2>Deleting your account</h2>
+          <p>Go to <strong>Settings → Privacy → Delete my account and data</strong>. This deletes your account, the lists only you use (with their items and shops), your feedback and your usage numbers. Lists you share with others are handed to another member so your household keeps them; items you added to those lists stay on them.</p>
+        </section>
+        <section>
+          <h2>Your rights</h2>
+          <p>Under the Mauritius Data Protection Act 2017 you can ask to see, correct or delete your personal data, and object to how it is used. You can delete most data yourself in the app. For anything else, contact us using <strong>Send feedback</strong> in the app (Settings → Testing Zeste). If you are not satisfied, you can complain to the Data Protection Office of Mauritius.</p>
+        </section>
+        <section>
+          <h2>Children</h2>
+          <p>Zeste is meant for adults managing household shopping and is not intended for children under 16.</p>
+        </section>
+        <section>
+          <h2>Changes</h2>
+          <p>If we change this policy, we will update the date above and, for important changes, tell you in the app.</p>
+        </section>
+      </div>
+
+      <!-- FRANÇAIS -->
+      <div lang="fr">
+        <section class="summary">
+          <h2>En bref</h2>
+          <ul>
+            <li>Zeste n'enregistre que ce qui est nécessaire pour vos listes et votre budget.</li>
+            <li>Pas de publicité, pas de vente de données, pas de traceurs tiers.</li>
+            <li>Les personnes avec qui vous partagez une liste voient cette liste et votre nom.</li>
+            <li>Vous pouvez supprimer votre compte et vos données à tout moment dans les Réglages.</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Qui sommes-nous</h2>
+          <p>Zeste est une application indépendante de listes de courses et de budget, créée à Maurice, actuellement en test privé. Dans cette politique, « nous » désigne l'équipe Zeste.</p>
+        </section>
+        <section>
+          <h2>Ce que nous enregistrons</h2>
+          <ul>
+            <li><strong>Votre compte :</strong> un identifiant aléatoire si vous utilisez Zeste en invité. Si vous vous connectez avec Google : votre nom, votre adresse e-mail et votre photo de profil.</li>
+            <li><strong>Vos listes :</strong> noms de listes, articles, quantités, prix, catégories, budgets et les courses enregistrées (montant, magasin, date, articles).</li>
+            <li><strong>Le partage :</strong> qui est membre de chaque liste, et les codes d'invitation.</li>
+            <li><strong>Vos avis :</strong> votre message, ainsi que la version de l'app, la langue, l'écran et le type de téléphone/navigateur.</li>
+            <li><strong>Statistiques d'utilisation :</strong> des comptes journaliers, par exemple le nombre d'ouvertures de Zeste, d'articles ajoutés, de courses enregistrées et d'invitations envoyées. Jamais le contenu de vos listes.</li>
+            <li><strong>Uniquement sur votre téléphone :</strong> vos choix de langue, thème, couleur et devise.</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Pourquoi nous les utilisons</h2>
+          <ul>
+            <li>Pour faire fonctionner l'app : enregistrer vos listes, les synchroniser entre vos téléphones et avec les personnes qui les partagent, et fonctionner hors ligne.</li>
+            <li>Pour montrer aux membres d'une liste partagée qui en fait partie (nom et photo).</li>
+            <li>Pour améliorer Zeste pendant le test, grâce à vos avis et aux statistiques d'utilisation.</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Qui peut les voir</h2>
+          <ul>
+            <li><strong>Les personnes avec qui vous partagez une liste</strong> voient cette liste, votre nom et votre photo.</li>
+            <li><strong>L'équipe Zeste</strong> voit les avis et les statistiques globales, et peut accéder aux données si nécessaire pour résoudre un problème.</li>
+            <li><strong>Google Firebase</strong> stocke les données et gère la connexion pour nous, sur des serveurs à Johannesburg, en Afrique du Sud. Google agit pour notre compte et ne peut pas utiliser vos données à ses propres fins.</li>
+            <li>Nous ne vendons jamais vos données et ne les utilisons pas pour de la publicité.</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Durée de conservation</h2>
+          <p>Jusqu'à ce que vous les supprimiez. Supprimer un article, une course ou une liste l'efface. Supprimer votre compte efface votre compte et vos données comme décrit ci-dessous.</p>
+        </section>
+        <section>
+          <h2>Supprimer votre compte</h2>
+          <p>Allez dans <strong>Réglages → Confidentialité → Supprimer mon compte et mes données</strong>. Cela supprime votre compte, les listes que vous êtes seul à utiliser (avec leurs articles et courses), vos avis et vos statistiques. Les listes partagées sont confiées à un autre membre pour que votre foyer les garde ; les articles que vous y avez ajoutés y restent.</p>
+        </section>
+        <section>
+          <h2>Vos droits</h2>
+          <p>Selon le Data Protection Act 2017 de Maurice, vous pouvez demander à consulter, corriger ou supprimer vos données personnelles, et vous opposer à leur utilisation. Vous pouvez supprimer la plupart des données vous-même dans l'app. Pour le reste, contactez-nous via <strong>Envoyer un avis</strong> dans l'app (Réglages → Tester Zeste). Si vous n'êtes pas satisfait, vous pouvez porter plainte auprès du Data Protection Office de Maurice.</p>
+        </section>
+        <section>
+          <h2>Enfants</h2>
+          <p>Zeste s'adresse aux adultes qui gèrent les courses du foyer et n'est pas destiné aux enfants de moins de 16 ans.</p>
+        </section>
+        <section>
+          <h2>Modifications</h2>
+          <p>Si nous modifions cette politique, nous mettrons à jour la date ci-dessus et, pour les changements importants, nous vous préviendrons dans l'app.</p>
+        </section>
+      </div>
+
+      <!-- KREOL MORISIEN -->
+      <div lang="mfe">
+        <section class="summary">
+          <h2>An bref</h2>
+          <ul>
+            <li>Zeste gard zis seki bizin pou fer ou bann lalis ek ou bidze marse.</li>
+            <li>Pena reklam, nou pa vann done, pena trakeur lezot konpani.</li>
+            <li>Dimoun ki ou partaz enn lalis avek zot trouv sa lalis-la ek ou nom.</li>
+            <li>Ou kapav efas ou kont ek ou bann done nenport ki ler dan Paramet.</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Kisannla nou ete</h2>
+          <p>Zeste se enn aplikasion endepandan pou lalis komisyon ek bidze, fer Moris, ki pe ankor teste an prive. Dan sa politik-la, "nou" vedir lekip Zeste.</p>
+        </section>
+        <section>
+          <h2>Ki nou gard</h2>
+          <ul>
+            <li><strong>Ou kont:</strong> enn nimero o-azar si ou servi Zeste kouma envite. Si ou konekte avek Google: ou nom, ou ladres email ek ou foto profil.</li>
+            <li><strong>Ou bann lalis:</strong> nom lalis, zafer, kantite, pri, kategori, bidze, ek bann komisyon ki ou sove (montan, magazin, dat, zafer).</li>
+            <li><strong>Partaz:</strong> kisannla manm sak lalis, ek bann kod invitasion.</li>
+            <li><strong>Komanter ki ou avoye:</strong> ou mesaz, avek versyon aplikasion, lang, ekran ek tip telefonn/navigater.</li>
+            <li><strong>Sifr itilizasion:</strong> konte par zour, kouma konbien fwa ou finn ouver Zeste, zafer ajoute, komisyon sove ek invitasion avoye. Zame seki lor ou lalis.</li>
+            <li><strong>Zis lor ou telefonn:</strong> ou swa lang, tem, kouler ek lamonnen.</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Pou ki nou servi zot</h2>
+          <ul>
+            <li>Pou fer aplikasion-la marse: sov ou bann lalis, sinkroniz zot ant ou bann telefonn ek dimoun ki partaz zot, ek marse san internet.</li>
+            <li>Pou montre manm enn lalis partaze kisannla ladan (nom ek foto).</li>
+            <li>Pou amelior Zeste pandan test-la, avek ou bann komanter ek bann sifr itilizasion.</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Kisannla kapav trouv zot</h2>
+          <ul>
+            <li><strong>Dimoun ki ou partaz enn lalis avek zot</strong> trouv sa lalis-la, ou nom ek ou foto.</li>
+            <li><strong>Lekip Zeste</strong> trouv bann komanter ek sifr itilizasion zeneral, ek kapav get done si bizin pou ranz enn problem.</li>
+            <li><strong>Google Firebase</strong> gard done-la ek ranz konexion pou nou, lor serveur Johannesburg, Lafrik di Sid. Google travay pou nou ek pa gagn drwa servi ou done pou so prop bezwin.</li>
+            <li>Nou zame vann ou done ni servi zot pou reklam.</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Konbien letan nou gard zot</h2>
+          <p>Ziska ou efas zot. Kan ou efas enn zafer, enn komisyon ouswa enn lalis, li disparet. Kan ou efas ou kont, ou kont ek ou done efase kouma ekrir anba.</p>
+        </section>
+        <section>
+          <h2>Efas ou kont</h2>
+          <p>Al dan <strong>Paramet → Lavi prive → Efas mo kont ek mo bann done</strong>. Sa efas ou kont, bann lalis ki zis ou servi (avek zot zafer ek komisyon), ou komanter ek ou sifr itilizasion. Bann lalis partaze donn enn lot manm pou ou fami gard zot; bann zafer ki ou finn ajoute ladan res la.</p>
+        </section>
+        <section>
+          <h2>Ou bann drwa</h2>
+          <p>Dapre Data Protection Act 2017 Moris, ou kapav demann pou trouv, koriz ouswa efas ou done personel, ek opoz kouma zot servi. Ou kapav efas laplipar done ou mem dan aplikasion. Pou lezot zafer, kontakte nou avek <strong>Avoy enn komanter</strong> dan aplikasion (Paramet → Pe teste Zeste). Si ou pa satisfe, ou kapav fer enn plint kot Data Protection Office Moris.</p>
+        </section>
+        <section>
+          <h2>Zanfan</h2>
+          <p>Zeste fer pou adilt ki pe zer komisyon lakaz, pa pou zanfan ki ena mwins ki 16 an.</p>
+        </section>
+        <section>
+          <h2>Sanzman</h2>
+          <p>Si nou sanz sa politik-la, nou pou met dat lao azour, ek pou bann gro sanzman, nou pou dir ou dan aplikasion.</p>
+        </section>
+      </div>
+    </main>
+    <script>
+      let lang = new URLSearchParams(location.search).get('lang');
+      if (!['en', 'fr', 'mfe'].includes(lang)) {
+        const nav = (navigator.language || 'en').toLowerCase();
+        lang = nav.startsWith('fr') ? 'fr' : 'en';
+      }
+      const titles = { en: 'Zeste · Privacy', fr: 'Zeste · Confidentialité', mfe: 'Zeste · Lavi prive' };
+      function setLang(next) {
+        lang = next;
+        document.documentElement.lang = next;
+        document.title = titles[next];
+        document.querySelectorAll('.langs button').forEach((b) => b.setAttribute('aria-pressed', b.dataset.lang === next));
+        const url = new URL(location.href);
+        url.searchParams.set('lang', next);
+        history.replaceState(null, '', url);
+      }
+      document.querySelectorAll('.langs button').forEach((b) => (b.onclick = () => setLang(b.dataset.lang)));
+      setLang(lang);
+    </script>
+  </body>
+</html>

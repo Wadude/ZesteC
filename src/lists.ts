@@ -64,15 +64,17 @@ export function renameList(listId: string, name: string) {
   if (trimmed) updateDoc(doc(db, 'lists', listId), { name: trimmed }).catch(console.error);
 }
 
-/** Owner only: deletes the list, its items and its invite link. Needs to be online. */
+/** Owner only: deletes the list, its items, saved shops and invite link. Needs to be online. */
 export async function deleteList(list: List) {
-  const items = await getDocs(collection(db, 'lists', list.id, 'items'));
-  const docs = items.docs;
-  // A batch holds at most 500 writes.
-  for (let i = 0; i < docs.length; i += 450) {
-    const batch = writeBatch(db);
-    docs.slice(i, i + 450).forEach((d) => batch.delete(d.ref));
-    await batch.commit();
+  // Items and saved shops live inside the list and must be deleted one by one.
+  for (const sub of ['items', 'trips']) {
+    const docs = (await getDocs(collection(db, 'lists', list.id, sub))).docs;
+    // A batch holds at most 500 writes.
+    for (let i = 0; i < docs.length; i += 450) {
+      const batch = writeBatch(db);
+      docs.slice(i, i + 450).forEach((d) => batch.delete(d.ref));
+      await batch.commit();
+    }
   }
   if (list.inviteCode) await deleteDoc(doc(db, 'invites', list.inviteCode)).catch(() => {});
   await deleteDoc(doc(db, 'lists', list.id));

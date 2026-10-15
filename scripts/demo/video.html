@@ -1,0 +1,286 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <!-- Video frame layout (540×960 CSS px, rendered at 2× = 1080×1920). Driven by video.mjs. -->
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 540px;
+        height: 960px;
+        overflow: hidden;
+        background: #f1f6f0;
+        color: #18221a;
+        font-family: 'Segoe UI', system-ui, sans-serif;
+      }
+      .layer {
+        position: absolute;
+        inset: 0;
+      }
+      .top {
+        position: absolute;
+        top: 34px;
+        left: 0;
+        right: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        font-size: 24px;
+        font-weight: 700;
+      }
+      .top img {
+        width: 42px;
+        height: 42px;
+        border-radius: 11px;
+      }
+      .phone {
+        position: absolute;
+        top: 100px;
+        left: 50%;
+        height: 610px;
+        aspect-ratio: 390 / 844;
+        transform: translateX(-50%);
+        padding: 11px;
+        border-radius: 46px;
+        background: #1b231d;
+        box-shadow: 0 24px 50px rgb(0 0 0 / 0.25);
+      }
+      .screen {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        border-radius: 36px;
+        overflow: hidden;
+        background: #f1f6f0;
+      }
+      .screen img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .finger,
+      .ripple {
+        position: absolute;
+        width: 15%;
+        aspect-ratio: 1;
+        margin: -7.5% 0 0 -7.5%;
+        border-radius: 50%;
+        pointer-events: none;
+      }
+      .finger {
+        background: rgb(255 255 255 / 0.45);
+        border: 3px solid rgb(24 34 26 / 0.55);
+        box-shadow: 0 6px 18px rgb(0 0 0 / 0.3);
+      }
+      .ripple {
+        border: 3px solid #2f7d4f;
+      }
+      .caption {
+        position: absolute;
+        top: 738px;
+        left: 40px;
+        right: 40px;
+        text-align: center;
+      }
+      .step {
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        color: #2f7d4f;
+      }
+      .caption h2 {
+        margin: 8px 0 8px;
+        font-size: 32px;
+        line-height: 1.15;
+      }
+      .caption p {
+        margin: 0;
+        font-size: 20px;
+        line-height: 1.4;
+        color: #5f6d61;
+      }
+      .progress {
+        position: absolute;
+        left: 40px;
+        right: 40px;
+        bottom: 26px;
+        height: 4px;
+        border-radius: 2px;
+        background: #dce7da;
+        overflow: hidden;
+      }
+      .progress div {
+        height: 100%;
+        background: #2f7d4f;
+      }
+      /* Opening and closing cards */
+      .card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        text-align: center;
+        background: #2f7d4f;
+        color: #fff;
+      }
+      .card img {
+        width: 150px;
+        height: 150px;
+        border-radius: 34px;
+        box-shadow: 0 16px 40px rgb(0 0 0 / 0.25);
+      }
+      .card h1 {
+        margin: 12px 0 0;
+        font-size: 64px;
+        letter-spacing: -0.02em;
+      }
+      .card p {
+        margin: 0;
+        font-size: 24px;
+        opacity: 0.9;
+        max-width: 420px;
+        line-height: 1.35;
+      }
+      .url {
+        margin-top: 18px;
+        padding: 14px 24px;
+        border-radius: 16px;
+        background: #fff;
+        color: #2f7d4f;
+        font-size: 24px;
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layer" id="scenes">
+      <div class="top"><img src="../../public/icons/icon-192.png" alt="" /><span id="title"></span></div>
+      <div class="phone">
+        <div class="screen">
+          <img id="under" alt="" />
+          <img id="over" alt="" />
+          <div class="ripple" id="ripple"></div>
+          <div class="finger" id="finger"></div>
+        </div>
+      </div>
+      <div class="caption" id="caption">
+        <div class="step" id="step"></div>
+        <h2 id="heading"></h2>
+        <p id="text"></p>
+      </div>
+      <div class="progress"><div id="bar"></div></div>
+    </div>
+    <div class="layer card" id="intro">
+      <img src="../../public/icons/icon-512.png" alt="" />
+      <h1>Zeste</h1>
+      <p id="introText"></p>
+    </div>
+    <div class="layer card" id="outro">
+      <img src="../../public/icons/icon-512.png" alt="" />
+      <h1 id="outroTitle"></h1>
+      <p id="outroText"></p>
+      <div class="url">zestec-3af1d.web.app</div>
+    </div>
+
+    <script>
+      // window.SCENES, window.TEXT and window.LANG are set by video.mjs before init().
+      const VIDEO_TEXT = {
+        en: { intro: 'Shared grocery lists and budget', title: 'Try Zeste', tag: 'Made in Mauritius' },
+        fr: { intro: 'Listes de courses partagées et budget', title: 'Essayez Zeste', tag: 'Fait à Maurice' },
+        mfe: { intro: 'Lalis komisyon partaze ek bidze', title: 'Esey Zeste', tag: 'Fer Moris' },
+      };
+      const INTRO = 2.4;
+      const OUTRO = 3.6;
+      const sceneLength = (s) => (s.tap ? 3.6 : 3.9);
+      const $ = (id) => document.getElementById(id);
+      const clamp = (v) => Math.max(0, Math.min(1, v));
+      const ease = (v) => (v < 0.5 ? 2 * v * v : 1 - Math.pow(-2 * v + 2, 2) / 2);
+      let timeline = [];
+      let images = [];
+
+      window.init = async () => {
+        const list = SCENES[LANG];
+        const words = VIDEO_TEXT[LANG];
+        $('title').textContent = TEXT[LANG].title;
+        $('introText').textContent = words.intro;
+        $('outroTitle').textContent = words.title;
+        $('outroText').textContent = words.tag;
+        let start = INTRO;
+        timeline = list.map((s) => {
+          const item = { ...s, start, length: sceneLength(s) };
+          start += item.length;
+          return item;
+        });
+        images = await Promise.all(
+          list.map(
+            (s) =>
+              new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => resolve(img.src);
+                img.src = `../../public/demo/img/${LANG}/${s.id}.webp`;
+              }),
+          ),
+        );
+        await document.fonts.ready;
+        return start + OUTRO; // total length in seconds
+      };
+
+      /** Draws the frame at time t (seconds). */
+      window.renderAt = (t) => {
+        const total = timeline.at(-1).start + timeline.at(-1).length;
+        $('intro').style.opacity = 1 - clamp((t - INTRO + 0.4) / 0.4);
+        $('outro').style.opacity = clamp((t - total) / 0.45);
+
+        const i = Math.max(0, timeline.findLastIndex((s) => t >= s.start));
+        const s = timeline[i];
+        const u = t - s.start;
+        const t2 = TEXT[LANG];
+
+        // Screenshot: crossfade from the previous one.
+        $('under').src = images[Math.max(0, i - 1)];
+        $('over').src = images[i];
+        $('over').style.opacity = i === 0 ? 1 : clamp(u / 0.45);
+
+        // Caption.
+        const [heading, text] = t2.scenes[s.id];
+        $('step').textContent = t2.step(i + 1, timeline.length);
+        $('heading').textContent = heading;
+        $('text').textContent = text;
+        const c = clamp(u / 0.4);
+        $('caption').style.opacity = c;
+        $('caption').style.transform = `translateY(${(1 - c) * 10}px)`;
+        $('bar').style.width = `${clamp((t - INTRO) / (total - INTRO)) * 100}%`;
+
+        // Finger: appears, glides to the button, presses; ripple on press.
+        const f = $('finger');
+        const r = $('ripple');
+        if (s.tap && u >= 1.4) {
+          const move = ease(clamp((u - 1.5) / 0.9));
+          f.style.opacity = clamp((u - 1.4) / 0.2);
+          f.style.left = `${(1.1 + (s.tap.x - 1.1) * move) * 100}%`;
+          f.style.top = `${(1.05 + (s.tap.y - 1.05) * move) * 100}%`;
+          const press = u >= 2.5 && u < 2.75;
+          f.style.transform = press ? 'scale(0.8)' : 'scale(1)';
+          const rp = clamp((u - 2.5) / 0.6);
+          r.style.left = f.style.left;
+          r.style.top = f.style.top;
+          r.style.opacity = u >= 2.5 ? 0.9 * (1 - rp) : 0;
+          r.style.transform = `scale(${0.6 + 1.4 * rp})`;
+        } else {
+          f.style.opacity = 0;
+          r.style.opacity = 0;
+        }
+        // No need to wait for a frame: taking the screenshot paints the latest state.
+        return true;
+      };
+    </script>
+  </body>
+</html>
