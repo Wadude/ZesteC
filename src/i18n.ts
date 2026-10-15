@@ -105,6 +105,8 @@ const en = {
   accentLagoon: 'Lagoon',
   accentCoral: 'Coral',
   language: 'Language',
+  currency: 'Currency',
+  currencyNote: 'Only the symbol changes. Amounts are not converted.',
   version: (v: string) => `Zeste · version ${v}`,
 
   // Share panel
@@ -313,6 +315,8 @@ const fr: Messages = {
   accentLagoon: 'Lagon',
   accentCoral: 'Corail',
   language: 'Langue',
+  currency: 'Devise',
+  currencyNote: "Seul le symbole change. Les montants ne sont pas convertis.",
   version: (v) => `Zeste · version ${v}`,
 
   shareTitle: (name) => `Partager ${name}`,
@@ -517,6 +521,8 @@ const mfe: Messages = {
   accentLagoon: 'Lagon',
   accentCoral: 'Koray',
   language: 'Lang',
+  currency: 'Lamonnen',
+  currencyNote: 'Zis senbol-la sanze. Bann montan pa konverti.',
   version: (v) => `Zeste · versyon ${v}`,
 
   shareTitle: (name) => `Partaz ${name}`,

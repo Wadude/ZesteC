@@ -3,7 +3,7 @@ import { addTrip, deleteTrip, setMonthlyBudget, summarise, updateTrip, useTrips 
 import { listName } from './i18n';
 import { formatDay, TripSheet } from './TripSheet';
 import type { List, Trip } from './types';
-import { formatRs } from './units';
+import { formatMoney, currencySymbol } from './units';
 import { useI18n } from './useI18n';
 
 interface Props {
@@ -92,15 +92,15 @@ export function BudgetScreen({ list, uid, onBack }: Props) {
 
       <section className="card budget-card">
         <h2>{t.spent}</h2>
-        <p className="big-number">{formatRs(spent)}</p>
+        <p className="big-number">{formatMoney(spent)}</p>
         {budget ? (
           <>
-            <p className="muted small">{t.spentOf(formatRs(spent), formatRs(budget))}</p>
+            <p className="muted small">{t.spentOf(formatMoney(spent), formatMoney(budget))}</p>
             <BudgetBar spent={spent} budget={budget} />
             <p className={`budget-status ${budgetLevel(spent, budget)}`}>
               {spent > budget
-                ? t.overBudget(formatRs(spent - budget))
-                : t.leftToSpend(formatRs(budget - spent))}
+                ? t.overBudget(formatMoney(spent - budget))
+                : t.leftToSpend(formatMoney(budget - spent))}
             </p>
           </>
         ) : null}
@@ -109,7 +109,7 @@ export function BudgetScreen({ list, uid, onBack }: Props) {
           {editingBudget ? (
             <form className="add-bar" onSubmit={saveBudget}>
               <div className="price-input grow">
-                <span aria-hidden="true">Rs</span>
+                <span aria-hidden="true">{currencySymbol()}</span>
                 <input
                   inputMode="decimal"
                   placeholder="8000"
@@ -124,7 +124,7 @@ export function BudgetScreen({ list, uid, onBack }: Props) {
           ) : (
             <>
               <span>
-                {t.monthlyBudget}: <strong>{budget ? formatRs(budget) : t.noBudget}</strong>
+                {t.monthlyBudget}: <strong>{budget ? formatMoney(budget) : t.noBudget}</strong>
               </span>
               <span className="spacer" />
               {budget != null && (
@@ -159,7 +159,7 @@ export function BudgetScreen({ list, uid, onBack }: Props) {
             <span className="muted small">{t.shops}</span>
           </div>
           <div>
-            <span className="stat-number">{formatRs(average)}</span>
+            <span className="stat-number">{formatMoney(average)}</span>
             <span className="muted small">{t.averagePerShop}</span>
           </div>
         </section>
@@ -175,7 +175,7 @@ export function BudgetScreen({ list, uid, onBack }: Props) {
                 <span className="store-bar">
                   <span style={{ width: `${(total / byStore[0][1]) * 100}%` }} />
                 </span>
-                <strong>{formatRs(total)}</strong>
+                <strong>{formatMoney(total)}</strong>
               </li>
             ))}
           </ul>
@@ -203,7 +203,7 @@ export function BudgetScreen({ list, uid, onBack }: Props) {
                       <span className="details">{t.itemCount(trip.itemCount)}</span>
                     )}
                   </span>
-                  <strong className="line-total">{formatRs(trip.total)}</strong>
+                  <strong className="line-total">{formatMoney(trip.total)}</strong>
                 </button>
               </li>
             ))}

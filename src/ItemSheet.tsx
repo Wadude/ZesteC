@@ -5,11 +5,12 @@ import type { ItemChanges } from './useList';
 import {
   UNITS,
   convertQuantity,
-  formatRs,
+  formatMoney,
   lineTotal,
   perLabel,
   stepFor,
   unitLabel,
+  currencySymbol,
 } from './units';
 import { useI18n } from './useI18n';
 
@@ -143,7 +144,7 @@ export function ItemSheet({ item, onSave, onDelete, onClose }: Props) {
           <span id="price-label">{t.price}</span>
           <div className="price-row">
             <div className="price-input">
-              <span aria-hidden="true">Rs</span>
+              <span aria-hidden="true">{currencySymbol()}</span>
               <input
                 aria-labelledby="price-label"
                 inputMode="decimal"
@@ -199,7 +200,7 @@ export function ItemSheet({ item, onSave, onDelete, onClose }: Props) {
         <p className="sheet-total" aria-live="polite">
           {total != null ? (
             <>
-              {t.total} <strong>{formatRs(total)}</strong>
+              {t.total} <strong>{formatMoney(total)}</strong>
             </>
           ) : (
             t.addPriceHint

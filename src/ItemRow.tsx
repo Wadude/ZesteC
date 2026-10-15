@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import type { Item } from './types';
-import { formatRs, itemDetails, lineTotal } from './units';
+import { formatMoney, itemDetails, lineTotal } from './units';
 import { useI18n } from './useI18n';
 
 const SWIPE_DELETE_PX = 96;
@@ -129,7 +129,7 @@ export function ItemRow({ item, onToggle, onOpen, onDelete, reorder }: Props) {
           {details && <span className="details">{details}</span>}
         </button>
 
-        {total != null && <span className="line-total">{formatRs(total)}</span>}
+        {total != null && <span className="line-total">{formatMoney(total)}</span>}
 
         <button className="delete" aria-label={t.deleteItem(item.name)} onClick={unlessSwiped(onDelete)}>
           <svg viewBox="0 0 24 24" aria-hidden="true">

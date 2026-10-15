@@ -11,7 +11,7 @@ import { TripSheet } from './TripSheet';
 import { listName } from './i18n';
 import { useI18n } from './useI18n';
 import { useList } from './useList';
-import { formatRs, listTotal } from './units';
+import { formatMoney, listTotal } from './units';
 import { useReorder } from './useReorder';
 import type { Item, List, Profile } from './types';
 
@@ -135,7 +135,7 @@ export function ListScreen({
             {toBuyTotal != null && (
               <>
                 {' · '}
-                <span className="estimate">≈ {formatRs(toBuyTotal)}</span>
+                <span className="estimate">≈ {formatMoney(toBuyTotal)}</span>
               </>
             )}
           </p>
@@ -202,9 +202,9 @@ export function ListScreen({
         </svg>
         <span className="budget-summary-text">
           {budget
-            ? t.spentOf(formatRs(monthSpent), formatRs(budget))
+            ? t.spentOf(formatMoney(monthSpent), formatMoney(budget))
             : monthSpent > 0
-              ? t.spentThisMonth(formatRs(monthSpent))
+              ? t.spentThisMonth(formatMoney(monthSpent))
               : t.tapToSetBudget}
           {budget ? <BudgetBar spent={monthSpent} budget={budget} /> : null}
         </span>
@@ -275,7 +275,7 @@ export function ListScreen({
                   <path d="M9 6l6 6-6 6" />
                 </svg>
                 {t.bought(bought.length)}
-                {boughtTotal != null && ` · ${formatRs(boughtTotal)}`}
+                {boughtTotal != null && ` · ${formatMoney(boughtTotal)}`}
               </button>
               <button className="done-button" onClick={() => setPanel('done')}>
                 <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -315,7 +315,7 @@ export function ListScreen({
           bought={bought}
           onSave={(input) => {
             finishShopping(listId, uid, bought, input);
-            setSaved(t.shopSaved(formatRs(input.total), input.store.trim()));
+            setSaved(t.shopSaved(formatMoney(input.total), input.store.trim()));
           }}
           onClose={() => setPanel(null)}
         />

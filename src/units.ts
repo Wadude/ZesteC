@@ -66,14 +66,53 @@ export function listTotal(items: Item[]): number | null {
 
 const round = (n: number) => Math.round(n * 1000) / 1000;
 
-/** "Rs 1,240" or "Rs 45.50" (prices in Mauritian rupees). */
-export function formatRs(n: number): string {
-  const rounded = Math.round(n * 100) / 100;
+// --- Money -------------------------------------------------------------------
+
+export interface Currency {
+  code: string;
+  symbol: string;
+  /** Some currencies have no cents in everyday use. */
+  decimals: 0 | 2;
+}
+
+/** Rs first: Zeste is made for Mauritius. Changing currency doesn't convert amounts. */
+export const CURRENCIES: Currency[] = [
+  { code: 'MUR', symbol: 'Rs', decimals: 2 },
+  { code: 'EUR', symbol: '€', decimals: 2 },
+  { code: 'USD', symbol: '$', decimals: 2 },
+  { code: 'GBP', symbol: '£', decimals: 2 },
+  { code: 'ZAR', symbol: 'R', decimals: 2 },
+  { code: 'INR', symbol: '₹', decimals: 2 },
+  { code: 'MGA', symbol: 'Ar', decimals: 0 },
+  { code: 'SCR', symbol: 'SR', decimals: 2 },
+  { code: 'AUD', symbol: 'A$', decimals: 2 },
+  { code: 'CAD', symbol: 'C$', decimals: 2 },
+];
+
+// The chosen currency. Set by the language/settings provider (useI18n), which also
+// re-renders the app when it changes.
+let currency: Currency = CURRENCIES[0];
+
+export function setCurrency(code: string) {
+  currency = CURRENCIES.find((c) => c.code === code) ?? CURRENCIES[0];
+}
+
+export function currencySymbol(): string {
+  return currency.symbol;
+}
+
+/** "Rs 1,240", "€12.50", "Ar 5,000": in the chosen currency. */
+export function formatMoney(n: number): string {
+  const factor = currency.decimals === 2 ? 100 : 1;
+  const rounded = Math.round(n * factor) / factor;
   const hasCents = rounded % 1 !== 0;
-  return `Rs ${rounded.toLocaleString('en', {
+  const number = rounded.toLocaleString('en', {
     minimumFractionDigits: hasCents ? 2 : 0,
-    maximumFractionDigits: 2,
-  })}`;
+    maximumFractionDigits: currency.decimals,
+  });
+  // Letter symbols get a space ("Rs 12"); sign symbols don't ("€12").
+  const space = /^[A-Za-z]+$/.test(currency.symbol) ? ' ' : '';
+  return `${currency.symbol}${space}${number}`;
 }
 
 /** "500 g", "1.5 L", "2 pcs", "1 pack" (in the current language). */
@@ -92,7 +131,7 @@ export function itemDetails(item: Item, t: Messages): string | null {
   // A total price is already shown on the right, so only describe per-unit prices.
   if (item.price != null && !item.priceIsTotal) {
     const basis = priceBasis(unit);
-    const price = formatRs(item.price);
+    const price = formatMoney(item.price);
     parts.push(
       basis !== 'each'
         ? `${price}/${basis}`

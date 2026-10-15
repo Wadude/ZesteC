@@ -3,7 +3,7 @@ import { recentStores, type TripInput } from './budget';
 import type { Messages } from './i18n';
 import { Sheet } from './Sheet';
 import type { Item, Trip } from './types';
-import { formatQuantity, formatRs, listTotal } from './units';
+import { formatQuantity, formatMoney, listTotal, currencySymbol } from './units';
 import { useI18n } from './useI18n';
 
 interface Props {
@@ -66,7 +66,7 @@ export function TripSheet({ mode, trip, bought = [], onSave, onDelete, onClose }
         <label className="field">
           <span>{t.amountPaid}</span>
           <div className="price-input">
-            <span aria-hidden="true">Rs</span>
+            <span aria-hidden="true">{currencySymbol()}</span>
             <input
               inputMode="decimal"
               placeholder="0"
@@ -75,7 +75,7 @@ export function TripSheet({ mode, trip, bought = [], onSave, onDelete, onClose }
               autoFocus={mode !== 'edit'}
             />
           </div>
-          {estimate != null && <span className="hint">{t.fromYourPrices(formatRs(estimate))}</span>}
+          {estimate != null && <span className="hint">{t.fromYourPrices(formatMoney(estimate))}</span>}
         </label>
 
         <label className="field">
@@ -120,7 +120,7 @@ export function TripSheet({ mode, trip, bought = [], onSave, onDelete, onClose }
                       <span className="details"> · {formatQuantity(i.quantity, i.unit ?? 'pcs', t)}</span>
                     )}
                   </span>
-                  {i.total != null && <span className="line-total">{formatRs(i.total)}</span>}
+                  {i.total != null && <span className="line-total">{formatMoney(i.total)}</span>}
                 </li>
               ))}
             </ul>

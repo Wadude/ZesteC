@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { signInWithGoogle, signOut } from './account';
 import { LANGUAGES } from './i18n';
+import { CURRENCIES } from './units';
 import type { Profile } from './types';
 import { useI18n } from './useI18n';
 import { ACCENTS, type Accent, type ThemeMode } from './useTheme';
@@ -28,7 +29,7 @@ export function SettingsScreen({
   onAccountChanged,
   onBack,
 }: Props) {
-  const { t, lang, setLang } = useI18n();
+  const { t, lang, setLang, currency, setCurrency } = useI18n();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const themes: { value: ThemeMode; label: string }[] = [
@@ -183,6 +184,23 @@ export function SettingsScreen({
             </button>
           ))}
         </div>
+      </section>
+
+      <section className="card">
+        <h2 id="currency-label">{t.currency}</h2>
+        <select
+          className="select"
+          aria-labelledby="currency-label"
+          value={currency}
+          onChange={(e) => setCurrency(e.target.value)}
+        >
+          {CURRENCIES.map((c) => (
+            <option key={c.code} value={c.code}>
+              {c.symbol} · {c.code}
+            </option>
+          ))}
+        </select>
+        <p className="hint currency-note">{t.currencyNote}</p>
       </section>
 
       <p className="version">{t.version(__APP_VERSION__)}</p>
