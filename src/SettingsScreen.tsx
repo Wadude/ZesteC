@@ -4,8 +4,8 @@ import { LANGUAGES } from './i18n';
 import { CURRENCIES } from './units';
 import { DeleteAccountSheet } from './DeleteAccountSheet';
 
-/** Only the app owner sees the usage numbers link (the database rules enforce it too). */
-const ADMIN_EMAIL = 'warren.pougnet@gmail.com';
+/** Only the app owner's accounts see the usage numbers link (the database rules enforce it too). */
+const ADMIN_EMAILS = ['zestemoris@gmail.com', 'warren.pougnet@gmail.com'];
 import type { Profile } from './types';
 import { useI18n } from './useI18n';
 import { ACCENTS, type Accent, type ThemeMode } from './useTheme';
@@ -221,7 +221,7 @@ export function SettingsScreen({
         </button>
       </section>
 
-      {profile.email === ADMIN_EMAIL && (
+      {profile.email && ADMIN_EMAILS.includes(profile.email) && (
         <button className="secondary-button stats-link" onClick={onOpenStats}>
           📊 Usage numbers (only you see this)
         </button>

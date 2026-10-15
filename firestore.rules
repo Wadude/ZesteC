@@ -16,7 +16,7 @@ service cloud.firestore {
     // The app owner, who can read the usage numbers on the stats screen.
     function isAdmin() {
       return signedIn()
-        && request.auth.token.email == 'warren.pougnet@gmail.com'
+        && request.auth.token.email in ['zestemoris@gmail.com', 'warren.pougnet@gmail.com']
         && request.auth.token.email_verified == true;
     }
 
