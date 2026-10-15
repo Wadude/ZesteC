@@ -61,6 +61,8 @@ Pulled forward from later phases: categories and aisle grouping, prices, spendin
 
 Each step ends with something testers can use. Order within a phase is decided by tester feedback.
 
+**Every individual feature** from the original plans, with its status and milestone, is in [FEATURES.md](FEATURES.md).
+
 | Phase | What | Gate to move on |
 |-------|------|-----------------|
 | **1. Closed test** *(now, 2–4 weeks)* | 20–50 testers, fix what they hit, add usage numbers, Kreol check, privacy page + account deletion, restrict API key | Testers use it weekly; ≥ 30% of lists shared; Done shopping used |
