@@ -31,9 +31,10 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png}'],
-        // The demo walkthrough is a separate page; don't store it with the app.
-        globIgnores: ['demo/**', 'privacy/**'],
+        // woff2: the Plus Jakarta Sans font, so the app looks the same offline.
+        globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        // The demo and privacy pages are separate; Vietnamese letters aren't needed.
+        globIgnores: ['demo/**', 'privacy/**', '**/*vietnamese*'],
         navigateFallback: '/index.html',
         // Firebase's own pages (sign-in handler etc.) and the demo must come from the server.
         navigateFallbackDenylist: [/^\/__\//, /^\/demo/, /^\/privacy/],
