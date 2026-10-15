@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import type { Item } from './types';
+import { categoryOf } from './categories';
 import { formatMoney, itemDetails, lineTotal } from './units';
 import { useI18n } from './useI18n';
 
@@ -62,6 +63,7 @@ export function ItemRow({ item, onToggle, onOpen, onDelete, reorder }: Props) {
 
   return (
     <li
+      data-cat={categoryOf(item)}
       className={`row-wrap${reorder?.dragging ? ' lifted' : ''}`}
       style={reorder?.offsetY ? { transform: `translateY(${reorder.offsetY}px)` } : undefined}
     >

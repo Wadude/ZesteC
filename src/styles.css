@@ -1550,3 +1550,274 @@ a.secondary-button {
 .stats-list li {
   grid-template-columns: minmax(0, 1fr) auto;
 }
+
+/* ===================================================================== */
+/* Design refresh (branch design-refresh): typeface, aisle colours,      */
+/* softer cards, budget ring, floating add bar, small animations.        */
+/* ===================================================================== */
+
+:root {
+  --elev: 0 1px 2px rgb(0 0 0 / 0.04), 0 6px 18px -8px rgb(0 0 0 / 0.14);
+  --elev-strong: 0 2px 4px rgb(0 0 0 / 0.05), 0 12px 32px -10px rgb(0 0 0 / 0.28);
+}
+:root[data-theme='dark'] {
+  --elev: 0 0 0 1px var(--line);
+  --elev-strong: 0 12px 32px -10px rgb(0 0 0 / 0.7), 0 0 0 1px var(--line);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --elev: 0 0 0 1px var(--line);
+    --elev-strong: 0 12px 32px -10px rgb(0 0 0 / 0.7), 0 0 0 1px var(--line);
+  }
+}
+
+html,
+body {
+  font-family: 'Plus Jakarta Sans Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Header */
+.header h1 {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.count {
+  font-weight: 500;
+}
+
+/* Aisle colours: used for the aisle badge and a thin strip on each item. */
+[data-cat='produce'] { --cat: #3f9142; }
+[data-cat='bakery'] { --cat: #c8913a; }
+[data-cat='meat'] { --cat: #d1495b; }
+[data-cat='dairy'] { --cat: #3d7fd1; }
+[data-cat='frozen'] { --cat: #2aa7c4; }
+[data-cat='pantry'] { --cat: #d98b1b; }
+[data-cat='snacks'] { --cat: #e06c2b; }
+[data-cat='drinks'] { --cat: #8a5cd1; }
+[data-cat='household'] { --cat: #2a9d8f; }
+[data-cat='personal'] { --cat: #d660a2; }
+[data-cat='other'] { --cat: #8a8f87; }
+
+.group + .group {
+  margin-top: 22px;
+}
+.group-title {
+  gap: 10px;
+  margin: 0 2px 10px;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.group-emoji {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  font-size: 16px;
+  background: color-mix(in srgb, var(--cat) 18%, var(--surface));
+}
+
+/* Items: soft cards with an aisle strip */
+.list {
+  gap: 8px;
+}
+.row-wrap {
+  border-radius: 16px;
+  animation: rise 0.28s ease both;
+}
+.row {
+  min-height: 60px;
+  border: none;
+  border-radius: 16px;
+  box-shadow: inset 4px 0 0 var(--cat, transparent), var(--elev);
+}
+.row.checked {
+  background: color-mix(in srgb, var(--surface) 55%, var(--bg));
+  box-shadow: inset 4px 0 0 color-mix(in srgb, var(--cat, transparent) 40%, transparent);
+}
+.name-text {
+  font-weight: 600;
+}
+.line-total {
+  font-weight: 700;
+}
+.check svg {
+  border-color: color-mix(in srgb, var(--cat, var(--muted)) 55%, var(--muted));
+}
+/* Ticking: the circle pops and a line sweeps through the name. */
+.row.checked .check svg {
+  animation: pop 0.38s cubic-bezier(0.3, 1.7, 0.6, 1);
+}
+.name-text {
+  align-self: flex-start; /* so the strike-through line is only as wide as the name */
+}
+.row.checked .name-text {
+  text-decoration: none;
+  background: linear-gradient(currentColor, currentColor) 0 55% / 100% 1.5px no-repeat;
+  animation: strike 0.35s ease-out;
+}
+.row.checked .name {
+  text-decoration: none;
+}
+@keyframes pop {
+  0% { transform: scale(0.55); }
+  100% { transform: scale(1); }
+}
+@keyframes strike {
+  from { background-size: 0 1.5px; }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(6px); }
+}
+
+/* Budget card with a ring */
+.budget-summary {
+  gap: 12px;
+  padding: 12px 14px;
+  border: none;
+  border-radius: 18px;
+  box-shadow: var(--elev);
+}
+.budget-summary > svg.wallet {
+  width: 28px;
+  height: 28px;
+}
+.budget-summary-text {
+  gap: 2px;
+}
+.budget-summary-main {
+  font-size: 15px;
+  font-weight: 700;
+}
+.budget-summary-sub {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.budget-summary-sub.over {
+  color: var(--danger);
+}
+.budget-summary > svg.ring {
+  flex: none;
+  width: 46px;
+  height: 46px;
+}
+.ring-track {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 4;
+}
+.ring-value {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 4;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.6s ease;
+}
+.ring.warn .ring-value { stroke: var(--warn); }
+.ring.over .ring-value { stroke: var(--danger); }
+.ring text {
+  stroke: none; /* icons are outlined by default; text must not be */
+  font-family: inherit;
+  font-size: 8.5px;
+  letter-spacing: -0.02em;
+  font-weight: 800;
+  fill: var(--text);
+}
+
+/* List tabs */
+.list-tab {
+  font-weight: 700;
+  border: none;
+  box-shadow: var(--elev);
+}
+.list-tab.new {
+  box-shadow: none;
+}
+
+/* Floating add bar */
+.bottom {
+  background: linear-gradient(to top, var(--bg) 50%, transparent);
+  padding-top: 18px;
+}
+.bottom .add-bar {
+  gap: 6px;
+  padding: 6px 6px 6px 8px;
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: var(--elev-strong);
+}
+.bottom .add-bar input {
+  border: none;
+  background: transparent;
+  border-radius: 999px;
+  padding: 11px 10px;
+}
+.bottom .add-bar input:focus {
+  border-color: transparent;
+}
+.bottom .add-bar button {
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.bottom .add-bar button:not(:disabled):active {
+  transform: scale(0.92);
+}
+.bottom .add-bar button svg {
+  width: 22px;
+  height: 22px;
+  stroke-width: 2.6;
+}
+
+/* Friendlier empty list */
+.empty {
+  padding: 48px 16px;
+}
+.empty-art {
+  width: 120px;
+  height: 120px;
+  margin-bottom: 6px;
+  animation: float 4s ease-in-out infinite;
+}
+.lemon-rind { fill: #f6d743; }
+.lemon-pith { fill: #fff4b8; }
+.lemon-flesh { fill: #f9e27a; }
+.lemon-segments line {
+  stroke: #fff4b8;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.lemon-leaf { fill: var(--accent); }
+@keyframes float {
+  50% { transform: translateY(-6px) rotate(-3deg); }
+}
+
+/* Cards and panels everywhere */
+.card {
+  border: none;
+  border-radius: 20px;
+  box-shadow: var(--elev);
+}
+.sheet {
+  border-radius: 26px 26px 0 0;
+}
+.segmented {
+  border: none;
+  background: color-mix(in srgb, var(--line) 55%, var(--bg));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row-wrap,
+  .row.checked .check svg,
+  .row.checked .name-text,
+  .empty-art {
+    animation: none;
+  }
+}
