@@ -28,6 +28,25 @@ export interface ItemChanges {
 
 const logError = (action: string) => (e: unknown) => console.error(`Could not ${action}`, e);
 
+/** Adds an item to a list. Text like "Rice 5kg" or "2 eggs" fills in the quantity. */
+export function addItem(listId: string, uid: string, text: string) {
+  if (!text.trim()) return;
+  const { name, quantity, unit } = parseItemText(text);
+  const ref = doc(collection(db, 'lists', listId, 'items'));
+  const now = Date.now();
+  // New items go to the bottom: order uses the same scale as createdAt.
+  setDoc(ref, {
+    name,
+    checked: false,
+    createdAt: now,
+    order: now,
+    addedBy: uid,
+    category: guessCategory(name),
+    ...(quantity != null && { quantity, unit }),
+  }).catch(logError('add item'));
+  track('itemsAdded');
+}
+
 export function useList(listId: string, uid: string) {
   const [items, setItems] = useState<Item[]>([]);
   const [loaded, setLoaded] = useState(false);
@@ -57,23 +76,7 @@ export function useList(listId: string, uid: string) {
   const itemRef = (id: string) => doc(db, 'lists', listId, 'items', id);
 
   /** Adds an item. Text like "Rice 5kg" or "2 eggs" fills in the quantity. */
-  const add = (text: string) => {
-    if (!text.trim()) return;
-    const { name, quantity, unit } = parseItemText(text);
-    const ref = doc(collection(db, 'lists', listId, 'items'));
-    const now = Date.now();
-    // New items go to the bottom: order uses the same scale as createdAt.
-    setDoc(ref, {
-      name,
-      checked: false,
-      createdAt: now,
-      order: now,
-      addedBy: uid,
-      category: guessCategory(name),
-      ...(quantity != null && { quantity, unit }),
-    }).catch(logError('add item'));
-    track('itemsAdded');
-  };
+  const add = (text: string) => addItem(listId, uid, text);
 
   /** Saves the edit panel. Blank quantity or price removes it. */
   const save = (id: string, changes: ItemChanges) => {

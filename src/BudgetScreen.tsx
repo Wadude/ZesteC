@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { addTrip, deleteTrip, setMonthlyBudget, summarise, updateTrip, useTrips } from './budget';
 import { listName } from './i18n';
+import { ListChips } from './ListChips';
 import { formatDay, TripSheet } from './TripSheet';
 import type { List, Trip } from './types';
 import { formatMoney, currencySymbol } from './units';
@@ -9,7 +10,10 @@ import { useI18n } from './useI18n';
 interface Props {
   list: List;
   uid: string;
-  onBack: () => void;
+  /** Other lists, to switch which list's budget is shown. */
+  lists?: List[];
+  onSelectList?: (listId: string) => void;
+  onBack?: () => void;
 }
 
 /** Bar colour: normal, amber from 80%, red when over. */
@@ -52,7 +56,7 @@ export function BudgetRing({ spent, budget, size = 44 }: { spent: number; budget
   );
 }
 
-export function BudgetScreen({ list, uid, onBack }: Props) {
+export function BudgetScreen({ list, uid, lists = [], onSelectList, onBack }: Props) {
   const { t } = useI18n();
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
@@ -84,16 +88,19 @@ export function BudgetScreen({ list, uid, onBack }: Props) {
   return (
     <div className="app">
       <header className="header header-row">
-        <button className="icon-button" aria-label={t.back} onClick={onBack}>
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M15 6l-6 6 6 6" />
-          </svg>
-        </button>
+        {onBack && (
+          <button className="icon-button" aria-label={t.back} onClick={onBack}>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M15 6l-6 6 6 6" />
+            </svg>
+          </button>
+        )}
         <div className="header-text">
           <h1>{t.budget}</h1>
           <p className="count">{listName(list.name, t)}</p>
         </div>
       </header>
+      {onSelectList && <ListChips lists={lists} currentId={list.id} onSelect={onSelectList} />}
 
       <div className="month-nav">
         <button className="icon-button" aria-label={t.previousMonth} onClick={() => goMonth(-1)}>

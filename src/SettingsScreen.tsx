@@ -20,7 +20,7 @@ interface Props {
   onFeedback: () => void;
   onOpenStats: () => void;
   onAccountChanged: () => void;
-  onBack: () => void;
+  onBack?: () => void;
 }
 
 export function SettingsScreen({
@@ -71,7 +71,7 @@ export function SettingsScreen({
     setBusy(true);
     try {
       await signOut();
-      onBack();
+      onBack?.();
     } finally {
       setBusy(false);
     }
@@ -80,11 +80,13 @@ export function SettingsScreen({
   return (
     <div className="app">
       <header className="header header-row">
-        <button className="icon-button" aria-label={t.back} onClick={onBack}>
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M15 6l-6 6 6 6" />
-          </svg>
-        </button>
+        {onBack && (
+          <button className="icon-button" aria-label={t.back} onClick={onBack}>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M15 6l-6 6 6 6" />
+            </svg>
+          </button>
+        )}
         <h1>{t.settings}</h1>
       </header>
 

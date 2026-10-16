@@ -1786,6 +1786,11 @@ body {
   margin-bottom: 6px;
   animation: float 4s ease-in-out infinite;
 }
+/* Icons are outlined by default; the lemon is filled shapes only. */
+.empty-art circle,
+.empty-art path {
+  stroke: none;
+}
 .lemon-rind { fill: #f6d743; }
 .lemon-pith { fill: #fff4b8; }
 .lemon-flesh { fill: #f9e27a; }
@@ -1820,4 +1825,206 @@ body {
   .empty-art {
     animation: none;
   }
+}
+
+/* ===================================================================== */
+/* Bottom tabs (branch tabs-nav): Lists · Budget · Household · Settings   */
+/* ===================================================================== */
+
+:root {
+  --tab-bar-h: 64px;
+}
+.app {
+  /* Room for the add bar and the tab bar at the bottom. */
+  padding-bottom: calc(170px + env(safe-area-inset-bottom));
+}
+.tab-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 15;
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  min-height: var(--tab-bar-h);
+  padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+  background: color-mix(in srgb, var(--surface) 90%, transparent);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid var(--line);
+}
+.tab {
+  flex: 1;
+  max-width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+.tab-icon {
+  position: relative;
+  width: 58px;
+  height: 30px;
+  border-radius: 15px;
+  display: grid;
+  place-items: center;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.tab svg {
+  width: 23px;
+  height: 23px;
+  stroke-width: 1.9;
+}
+.tab.active {
+  color: var(--text);
+  font-weight: 700;
+}
+.tab.active .tab-icon {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--accent);
+}
+.tab:active .tab-icon {
+  transform: scale(0.94);
+}
+.tab-badge {
+  position: absolute;
+  top: -3px;
+  right: 9px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 16px;
+}
+
+/* The add bar sits just above the tabs. */
+.bottom {
+  bottom: calc(var(--tab-bar-h) + env(safe-area-inset-bottom));
+  padding-bottom: 10px;
+}
+
+/* Household page */
+.household-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.budget-setting strong {
+  white-space: nowrap;
+}
+
+/* The + in the middle of the tab bar */
+.app {
+  /* The add bar is gone from the list, so less room is needed at the bottom. */
+  padding-bottom: calc(110px + env(safe-area-inset-bottom));
+}
+.tab-add {
+  flex: none;
+  align-self: center;
+  width: 48px;
+  height: 48px;
+  margin: 0 6px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: var(--accent);
+  color: var(--accent-text);
+  box-shadow: 0 6px 16px -6px color-mix(in srgb, var(--accent) 70%, transparent);
+  transition: transform 0.15s ease;
+}
+.tab-add:active {
+  transform: scale(0.92);
+}
+.tab-add svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2.6;
+}
+
+/* The + panel */
+.add-sheet-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.add-sheet-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.add-sheet-form .add-bar {
+  gap: 6px;
+  padding: 6px 6px 6px 8px;
+  border-radius: 999px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+}
+.add-sheet-form .add-bar:focus-within {
+  border-color: var(--accent);
+}
+.add-sheet-form .add-bar input {
+  border: none;
+  background: transparent;
+  padding: 11px 10px;
+}
+.add-sheet-form .add-bar button {
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+.add-sheet-form .add-bar button svg {
+  width: 22px;
+  height: 22px;
+  stroke-width: 2.6;
+}
+.added-chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.added-chips li {
+  padding: 6px 12px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface));
+  color: var(--text);
+  animation: rise 0.25s ease both;
+}
+.add-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.add-actions button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 6px;
+  border-radius: 16px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+}
+.add-actions button span {
+  font-size: 24px;
 }
