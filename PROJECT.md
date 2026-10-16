@@ -130,4 +130,6 @@ Language, theme, colour, currency and sort order are per-device settings.
 | 2026-10-15 | Working name **Zeste**; published at https://zestec-3af1d.web.app |
 | 2026-10-15 | Added: prices, categories, multiple lists, languages (EN/FR/Kreol), themes, currency, full budget tracker |
 | 2026-10-15 | Closed test with tester code (rules-enforced) + in-app feedback; demo tour and videos |
+| 2026-10-16 | Bottom tabs (Lists · Budget · + · Household · Settings) and one + for all adding |
+| 2026-10-16 | **Next update: Recipes** (confidential until launch). 3–5 local chefs, photos shot in-house, every recipe in EN/FR/Kreol, tags Halal · Vegetarian · "Dan 1 Zeste", cost per serving, "add ingredients to my list". Recipes replaces Household in the tab bar (Household moves into Settings/list) |
 | *open* | Final app name and domain |
