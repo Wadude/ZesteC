@@ -245,7 +245,8 @@ async function captureLanguage(lang, port) {
     // A second list, so the list tabs show.
     await b.js(`(async () => {
       ${HELPERS};
-      document.querySelector('.list-tab.new').click(); await $z.wait(500);
+      document.querySelector('.tab-add').click(); await $z.wait(600);
+      document.querySelectorAll('.add-actions button')[0].click(); await $z.wait(600);
       $z.setVal(document.querySelector('.sheet input'), 'Weekend'); await $z.wait(50);
       document.querySelector('.sheet form').requestSubmit(); await $z.wait(4000);
       return true;
@@ -254,11 +255,11 @@ async function captureLanguage(lang, port) {
     // Make an invite link and have "Priya" join, so the list is shared.
     const invite = await b.js(`(async () => {
       ${HELPERS};
+      document.querySelectorAll('.tab')[2].click(); await $z.wait(800);
       [...document.querySelectorAll('.list-tab')][0].click(); await $z.wait(1500);
-      document.querySelector('.header-row .icon-button').click(); await $z.wait(600);
       navigator.share = undefined;
       Object.defineProperty(navigator, 'clipboard', { value: { writeText: async () => {} }, configurable: true });
-      document.querySelector('.sheet .primary-button').click(); await $z.wait(5000);
+      document.querySelector('.household-card .primary-button').click(); await $z.wait(5000);
       return document.querySelector('.invite-code')?.textContent;
     })()`);
     await addPartner(seed.listId, invite);
@@ -266,19 +267,26 @@ async function captureLanguage(lang, port) {
     await b.js(`(async () => { ${HELPERS}; [...document.querySelectorAll('.list-tab')][0]?.click(); await $z.wait(1500); scrollTo(0, 0); return true; })()`);
     await wait(1000);
 
-    // 2. The list, sorted by aisle, with prices
-    await scene('list', `document.querySelector('.add-bar input')`);
+    // 2. The list, sorted by aisle, with prices; next: the + button
+    await scene('list', `document.querySelector('.tab-add')`);
 
-    // 3. Typing "Cheese 200g"
-    await b.js(`(async () => { ${HELPERS}; $z.setVal(document.querySelector('.add-bar input'), ${JSON.stringify(NEW_ITEM[lang])}); return true; })()`);
+    // 3. The + panel: typing "Cheese 200g"
+    await b.js(`(async () => {
+      ${HELPERS};
+      document.querySelector('.tab-add').click(); await $z.wait(700);
+      $z.setVal(document.querySelector('.add-sheet-form input'), ${JSON.stringify(NEW_ITEM[lang])});
+      return true;
+    })()`);
     await wait(300);
-    await scene('type', `document.querySelector('.add-bar button')`);
+    await scene('type', `document.querySelector('.add-sheet-form button')`);
 
     // 4. It lands in the right aisle
     const newName = NEW_ITEM[lang].replace(/ ?\d+g$/, '');
     await b.js(`(async () => {
       ${HELPERS};
-      document.querySelector('.add-bar').requestSubmit(); await $z.wait(1200);
+      document.querySelector('.add-sheet-form').requestSubmit(); await $z.wait(900);
+      document.querySelector('.add-sheet-form').closest('.sheet').querySelector('.secondary-button').click();
+      await $z.wait(900);
       document.activeElement?.blur();
       $z.row(${JSON.stringify(newName)}).scrollIntoView({ block: 'center' }); await $z.wait(500);
       return true;
@@ -327,16 +335,16 @@ async function captureLanguage(lang, port) {
 
     // 9. Budget screen
     await b.js(`(async () => { ${HELPERS}; document.querySelector('.budget-summary').click(); await $z.wait(1800); return true; })()`);
-    await scene('budget', `document.querySelector('.header .icon-button')`);
+    await scene('budget', `document.querySelectorAll('.tab')[2]`);
 
-    // 10. Sharing
+    // 10. Household: sharing the list
     await b.js(`(async () => {
       ${HELPERS};
-      document.querySelector('.header .icon-button').click(); await $z.wait(1200);
-      document.querySelector('.header-row .icon-button').click(); await $z.wait(1500);
+      document.querySelectorAll('.tab')[2].click(); await $z.wait(1800);
+      scrollTo(0, 0);
       return true;
     })()`);
-    await scene('share', null);
+    await scene('share', `document.querySelectorAll('.tab')[3]`);
 
     // The invite code is visible in the picture: cancel it so it can't be used to get in.
     await b.js(`(async () => {
@@ -350,8 +358,7 @@ async function captureLanguage(lang, port) {
     // 11. Language and colours
     await b.js(`(async () => {
       ${HELPERS};
-      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' })); await $z.wait(500);
-      document.querySelector('.header-row .icon-button:last-child').click(); await $z.wait(800);
+      document.querySelectorAll('.tab')[3].click(); await $z.wait(800);
       document.querySelector('.swatch.coral').click(); await $z.wait(600);
       document.querySelector('.swatches').scrollIntoView({ block: 'center' }); await $z.wait(400);
       return true;
