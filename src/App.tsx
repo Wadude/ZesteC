@@ -3,9 +3,11 @@ import { useAccess } from './access';
 import { AccessScreen } from './AccessScreen';
 import { BudgetScreen } from './BudgetScreen';
 import { FeedbackSheet } from './FeedbackSheet';
+import { HouseholdScreen } from './HouseholdScreen';
 import { ListScreen } from './ListScreen';
 import { SettingsScreen } from './SettingsScreen';
 import { StatsScreen } from './StatsScreen';
+import { TabBar, type Tab } from './TabBar';
 import { listName } from './i18n';
 import { useI18n } from './useI18n';
 import { useLists } from './useLists';
@@ -13,16 +15,14 @@ import { useSession } from './useSession';
 import { useAccent, useTheme } from './useTheme';
 import { startUsage } from './usage';
 
-type Screen = 'list' | 'settings' | 'budget' | 'stats';
+// The four tabs, plus the owner-only stats screen opened from Settings.
+type Screen = Tab | 'stats';
 
-const screenFromHash = (): Screen =>
-  location.hash === '#settings'
-    ? 'settings'
-    : location.hash === '#budget'
-      ? 'budget'
-      : location.hash === '#stats'
-        ? 'stats'
-        : 'list';
+const SCREENS: Screen[] = ['budget', 'household', 'settings', 'stats'];
+const screenFromHash = (): Screen => {
+  const h = location.hash.slice(1) as Screen;
+  return SCREENS.includes(h) ? h : 'list';
+};
 
 /** Invite links look like /join/ABCD2345. Read the code once, then tidy the address bar. */
 function takeJoinCode(): string | null {
@@ -81,15 +81,22 @@ export default function App() {
     return () => clearTimeout(t);
   }, [joinResult, clearJoinResult]);
 
-  const open = (next: Exclude<Screen, 'list'>) => {
-    openedInApp.current = true;
-    location.hash = next;
+  // Switching tabs replaces the address (Back doesn't step through every tab you visited).
+  const goTab = (tab: Tab) => {
+    history.replaceState(null, '', tab === 'list' ? location.pathname + location.search : `#${tab}`);
+    setScreen(tab);
+    window.scrollTo(0, 0);
   };
-  const goBack = () => {
+  // Stats is a page on top of Settings, so Back returns to Settings.
+  const openStats = () => {
+    openedInApp.current = true;
+    location.hash = 'stats';
+  };
+  const closeStats = () => {
     if (openedInApp.current) history.back();
-    else history.replaceState(null, '', location.pathname + location.search);
+    else history.replaceState(null, '', '#settings');
     openedInApp.current = false;
-    setScreen('list');
+    setScreen('settings');
   };
 
   if (error) {
@@ -122,16 +129,20 @@ export default function App() {
   );
 
   if (screen === 'stats') {
-    return <StatsScreen onBack={goBack} />;
+    return <StatsScreen onBack={closeStats} />;
   }
 
-  if (screen === 'budget') {
-    return <BudgetScreen key={current.id} list={current} uid={profile.uid} onBack={goBack} />;
-  }
+  const tabs = <TabBar current={screen} onChange={goTab} members={current.memberIds.length} />;
 
-  if (screen === 'settings') {
-    return (
-      <>
+  return (
+    <>
+      {screen === 'budget' && (
+        <BudgetScreen key={current.id} list={current} uid={profile.uid} lists={lists} onSelectList={select} />
+      )}
+      {screen === 'household' && (
+        <HouseholdScreen list={current} lists={lists} uid={profile.uid} onSelectList={select} />
+      )}
+      {screen === 'settings' && (
         <SettingsScreen
           profile={profile}
           listId={current.id}
@@ -140,27 +151,22 @@ export default function App() {
           accent={accent}
           onAccentChange={setAccent}
           onFeedback={() => setFeedbackFrom('settings')}
-          onOpenStats={() => open('stats')}
+          onOpenStats={openStats}
           onAccountChanged={refresh}
-          onBack={goBack}
         />
-        {feedback}
-      </>
-    );
-  }
-
-  return (
-    <>
-      <ListScreen
-        key={current.id}
-        list={current}
-        lists={lists}
-        profile={profile}
-        onSelectList={select}
-        onOpenSettings={() => open('settings')}
-        onOpenBudget={() => open('budget')}
-        onFeedback={() => setFeedbackFrom('list')}
-      />
+      )}
+      {screen === 'list' && (
+        <ListScreen
+          key={current.id}
+          list={current}
+          lists={lists}
+          profile={profile}
+          onSelectList={select}
+          onOpenBudget={() => goTab('budget')}
+          onFeedback={() => setFeedbackFrom('list')}
+        />
+      )}
+      {tabs}
       {feedback}
       {joinResult && (
         <div className="banner" role="status" onClick={clearJoinResult}>

@@ -40,7 +40,8 @@ function useMembers(memberIds: string[]) {
   return members;
 }
 
-export function ShareSheet({ list, uid, onClose }: Props) {
+/** Invite link, list name and members, for the Household tab (or a panel). */
+export function ShareContent({ list, uid, onLeft }: { list: List; uid: string; onLeft: () => void }) {
   const { t } = useI18n();
   const displayName = listName(list.name, t);
   const [name, setName] = useState(displayName);
@@ -98,7 +99,7 @@ export function ShareSheet({ list, uid, onClose }: Props) {
     run(async () => {
       if (!confirm(t.confirmLeave(displayName))) return;
       await leaveList(list.id, uid);
-      onClose();
+      onLeft();
     });
 
   const saveName = () => {
@@ -106,7 +107,7 @@ export function ShareSheet({ list, uid, onClose }: Props) {
   };
 
   return (
-    <Sheet label={t.shareTitle(displayName)} onClose={onClose}>
+    <>
       <label className="field">
         <span>{t.listName}</span>
         <input
@@ -171,6 +172,15 @@ export function ShareSheet({ list, uid, onClose }: Props) {
           {t.leaveList}
         </button>
       )}
+    </>
+  );
+}
+
+export function ShareSheet({ list, uid, onClose }: Props) {
+  const { t } = useI18n();
+  return (
+    <Sheet label={t.shareTitle(listName(list.name, t))} onClose={onClose}>
+      <ShareContent list={list} uid={uid} onLeft={onClose} />
     </Sheet>
   );
 }

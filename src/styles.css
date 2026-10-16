@@ -1821,3 +1821,98 @@ body {
     animation: none;
   }
 }
+
+/* ===================================================================== */
+/* Bottom tabs (branch tabs-nav): Lists · Budget · Household · Settings   */
+/* ===================================================================== */
+
+:root {
+  --tab-bar-h: 64px;
+}
+.app {
+  /* Room for the add bar and the tab bar at the bottom. */
+  padding-bottom: calc(170px + env(safe-area-inset-bottom));
+}
+.tab-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 15;
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  min-height: var(--tab-bar-h);
+  padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+  background: color-mix(in srgb, var(--surface) 90%, transparent);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid var(--line);
+}
+.tab {
+  flex: 1;
+  max-width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+.tab-icon {
+  position: relative;
+  width: 58px;
+  height: 30px;
+  border-radius: 15px;
+  display: grid;
+  place-items: center;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.tab svg {
+  width: 23px;
+  height: 23px;
+  stroke-width: 1.9;
+}
+.tab.active {
+  color: var(--text);
+  font-weight: 700;
+}
+.tab.active .tab-icon {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--accent);
+}
+.tab:active .tab-icon {
+  transform: scale(0.94);
+}
+.tab-badge {
+  position: absolute;
+  top: -3px;
+  right: 9px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 16px;
+}
+
+/* The add bar sits just above the tabs. */
+.bottom {
+  bottom: calc(var(--tab-bar-h) + env(safe-area-inset-bottom));
+  padding-bottom: 10px;
+}
+
+/* Household page */
+.household-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.budget-setting strong {
+  white-space: nowrap;
+}
