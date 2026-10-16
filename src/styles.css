@@ -1786,6 +1786,11 @@ body {
   margin-bottom: 6px;
   animation: float 4s ease-in-out infinite;
 }
+/* Icons are outlined by default; the lemon is filled shapes only. */
+.empty-art circle,
+.empty-art path {
+  stroke: none;
+}
 .lemon-rind { fill: #f6d743; }
 .lemon-pith { fill: #fff4b8; }
 .lemon-flesh { fill: #f9e27a; }
