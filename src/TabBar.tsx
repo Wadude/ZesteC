@@ -8,6 +8,8 @@ interface Props {
   onChange: (tab: Tab) => void;
   /** People on the current list, shown as a small number on Household when it's shared. */
   members: number;
+  /** The + in the middle: add an item, a list, a shop… */
+  onAdd: () => void;
 }
 
 const ICONS: Record<Tab, ReactNode> = {
@@ -39,7 +41,7 @@ const ICONS: Record<Tab, ReactNode> = {
 };
 
 /** Bottom navigation, like most phone apps: within thumb reach. */
-export function TabBar({ current, onChange, members }: Props) {
+export function TabBar({ current, onChange, members, onAdd }: Props) {
   const { t } = useI18n();
   const labels: Record<Tab, string> = {
     list: t.tabLists,
@@ -49,7 +51,15 @@ export function TabBar({ current, onChange, members }: Props) {
   };
   return (
     <nav className="tab-bar" aria-label="Zeste">
-      {(Object.keys(ICONS) as Tab[]).map((tab) => (
+      {(Object.keys(ICONS) as Tab[]).flatMap((tab) => [
+        // The + sits in the middle, between Budget and Household.
+        tab === 'household' && (
+          <button key="add" className="tab-add" aria-label={t.addSomething} onClick={onAdd}>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+          </button>
+        ),
         <button
           key={tab}
           className={`tab${current === tab ? ' active' : ''}`}
@@ -63,8 +73,8 @@ export function TabBar({ current, onChange, members }: Props) {
             {tab === 'household' && members > 1 && <span className="tab-badge">{members}</span>}
           </span>
           <span className="tab-label">{labels[tab]}</span>
-        </button>
-      ))}
+        </button>,
+      ])}
     </nav>
   );
 }

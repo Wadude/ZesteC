@@ -1,13 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 import { useAccess } from './access';
 import { AccessScreen } from './AccessScreen';
+import { AddSheet } from './AddSheet';
+import { addTrip } from './budget';
 import { BudgetScreen } from './BudgetScreen';
 import { FeedbackSheet } from './FeedbackSheet';
 import { HouseholdScreen } from './HouseholdScreen';
 import { ListScreen } from './ListScreen';
+import { NewListSheet } from './NewListSheet';
 import { SettingsScreen } from './SettingsScreen';
 import { StatsScreen } from './StatsScreen';
 import { TabBar, type Tab } from './TabBar';
+import { TripSheet } from './TripSheet';
 import { listName } from './i18n';
 import { useI18n } from './useI18n';
 import { useLists } from './useLists';
@@ -66,6 +70,8 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>(screenFromHash);
   const openedInApp = useRef(false);
   const [feedbackFrom, setFeedbackFrom] = useState<string | null>(null);
+  // Panels opened from the + button.
+  const [adding, setAdding] = useState<'menu' | 'list' | 'shop' | null>(null);
 
   // Screens use the URL hash so the phone's Back button works.
   useEffect(() => {
@@ -132,7 +138,41 @@ export default function App() {
     return <StatsScreen onBack={closeStats} />;
   }
 
-  const tabs = <TabBar current={screen} onChange={goTab} members={current.memberIds.length} />;
+  const tabs = (
+    <TabBar
+      current={screen}
+      onChange={goTab}
+      members={current.memberIds.length}
+      onAdd={() => setAdding('menu')}
+    />
+  );
+  const addPanels = (
+    <>
+      {adding === 'menu' && (
+        <AddSheet
+          list={current}
+          uid={profile.uid}
+          onNewList={() => setAdding('list')}
+          onAddShop={() => setAdding('shop')}
+          onInvite={() => goTab('household')}
+          onClose={() => setAdding((a) => (a === 'menu' ? null : a))}
+        />
+      )}
+      {adding === 'list' && (
+        <NewListSheet
+          uid={profile.uid}
+          onCreated={(id) => {
+            select(id);
+            goTab('list');
+          }}
+          onClose={() => setAdding(null)}
+        />
+      )}
+      {adding === 'shop' && (
+        <TripSheet mode="add" onSave={(input) => addTrip(current.id, profile.uid, input)} onClose={() => setAdding(null)} />
+      )}
+    </>
+  );
 
   return (
     <>
@@ -167,6 +207,7 @@ export default function App() {
         />
       )}
       {tabs}
+      {addPanels}
       {feedback}
       {joinResult && (
         <div className="banner" role="status" onClick={clearJoinResult}>

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { finishShopping, summarise, useTrips } from './budget';
 import { BudgetRing } from './BudgetScreen';
 import { CATEGORIES, CATEGORY_EMOJI, categoryOf } from './categories';
@@ -54,7 +54,7 @@ export function ListScreen({
   const { trips } = useTrips(list.id, now.getFullYear(), now.getMonth());
   const monthSpent = summarise(trips).spent;
   const budget = list.monthlyBudget;
-  const { loaded, items, toBuy, bought, add, save, toggle, remove, restore, move } = useList(
+  const { loaded, items, toBuy, bought, save, toggle, remove, restore, move } = useList(
     listId,
     uid,
   );
@@ -63,7 +63,6 @@ export function ListScreen({
   const toBuyTotal = listTotal(toBuy);
   const boughtTotal = listTotal(bought);
   const { listRef, propsFor, reordering } = useReorder(toBuy.length, move);
-  const [text, setText] = useState('');
   const [showBought, setShowBought] = useState(true);
   const [sort, setSortState] = useState<SortMode>(loadSort);
   const setSort = (mode: SortMode) => {
@@ -75,7 +74,6 @@ export function ListScreen({
     }
   };
   const [deleted, setDeleted] = useState<Item | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   // Hide the Undo bar after a few seconds.
   useEffect(() => {
@@ -347,29 +345,6 @@ export function ListScreen({
             </button>
           </div>
         )}
-        <form
-          className="add-bar"
-          onSubmit={(e) => {
-            e.preventDefault();
-            add(text);
-            setText('');
-            inputRef.current?.focus();
-          }}
-        >
-          <input
-            ref={inputRef}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder={t.addPlaceholder}
-            aria-label={t.newItem}
-            enterKeyHint="done"
-          />
-          <button type="submit" disabled={!text.trim()} aria-label={t.add}>
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 5v14M5 12h14" />
-            </svg>
-          </button>
-        </form>
       </div>
     </div>
   );
